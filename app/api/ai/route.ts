@@ -3,6 +3,8 @@ import { openai } from "@ai-sdk/openai"
 import { type NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
 
+export const dynamic = 'force-dynamic'
+
 // Define the response schema for structured output
 const CommandInterpretationSchema = z.object({
   commands: z.array(z.string()).describe("Array of terminal commands to execute"),

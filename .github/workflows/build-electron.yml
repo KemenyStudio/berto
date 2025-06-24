@@ -31,70 +31,105 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '18'
-        cache: 'npm'
+        
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: 8
+        
+    - name: Get pnpm store directory
+      shell: bash
+      run: |
+        echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+        
+    - name: Setup pnpm cache
+      uses: actions/cache@v3
+      with:
+        path: ${{ env.STORE_PATH }}
+        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-pnpm-store-
         
     - name: Install dependencies
-      run: npm ci
+      run: pnpm install --frozen-lockfile
       
-    - name: Build Next.js app
-      env:
-        ELECTRON_BUILD: true
-      run: |
-        npm run build
-        
-    - name: Build Electron app (Windows)
+    - name: Build Electron App (Windows)
       if: matrix.os == 'windows-latest'
       run: |
-        npm run build-electron -- --win
+        pnpm run build-electron -- --win
         
-    - name: Build Electron app (macOS)
+    - name: Build Electron App (macOS)
       if: matrix.os == 'macos-latest'
       run: |
-        npm run build-electron -- --mac
+        pnpm run build-electron -- --mac
         
-    - name: Build Electron app (Linux)
+    - name: Build Electron App (Linux)
       if: matrix.os == 'ubuntu-latest'
       run: |
-        npm run build-electron -- --linux
-        
-    - name: Setup LFS and upload artifacts (Windows)
-      if: matrix.os == 'windows-latest'
-      run: |
-        mkdir -p public/downloads
-        cp dist/*.exe public/downloads/berto-windows.exe
-        git lfs track "public/downloads/*.exe"
-        git add public/downloads/berto-windows.exe
-        
-    - name: Setup LFS and upload artifacts (macOS)
-      if: matrix.os == 'macos-latest'
-      run: |
-        mkdir -p public/downloads
-        cp dist/*.dmg public/downloads/berto-mac.dmg
-        git lfs track "public/downloads/*.dmg"
-        git add public/downloads/berto-mac.dmg
-        
-    - name: Setup LFS and upload artifacts (Linux)
-      if: matrix.os == 'ubuntu-latest'
-      run: |
-        mkdir -p public/downloads
-        cp dist/*.AppImage public/downloads/berto-linux.AppImage
-        git lfs track "public/downloads/*.AppImage"
-        git add public/downloads/berto-linux.AppImage
-        
-    - name: Commit LFS files
-      if: github.ref == 'refs/heads/main'
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git add .gitattributes
-        git diff --staged --quiet || git commit -m "Update Electron builds for ${{ matrix.os }}"
-        git push
+        pnpm run build-electron -- --linux
         
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
         name: electron-${{ matrix.os }}
         path: dist/
+        retention-days: 30
+        
+  deploy-binaries:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        lfs: true
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Setup Git LFS
+      run: git lfs install
+        
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      
+    - name: Setup binaries for LFS
+      run: |
+        mkdir -p public/downloads
+        
+        # Copy Windows binary if exists
+        if [ -d "electron-windows-latest" ]; then
+          find electron-windows-latest -name "*.exe" -exec cp {} public/downloads/berto-windows.exe \;
+        fi
+        
+        # Copy macOS binary if exists  
+        if [ -d "electron-macos-latest" ]; then
+          find electron-macos-latest -name "*.dmg" -exec cp {} public/downloads/berto-mac.dmg \;
+        fi
+        
+        # Copy Linux binary if exists
+        if [ -d "electron-ubuntu-latest" ]; then
+          find electron-ubuntu-latest -name "*.AppImage" -exec cp {} public/downloads/berto-linux.AppImage \;
+        fi
+        
+        # Track with LFS
+        git lfs track "public/downloads/*.exe"
+        git lfs track "public/downloads/*.dmg"
+        git lfs track "public/downloads/*.AppImage"
+        
+    - name: Commit and push LFS files
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add .gitattributes
+        git add public/downloads/
+        
+        if ! git diff --staged --quiet; then
+          git commit -m "Update Electron builds [skip ci]"
+          git push
+        else
+          echo "No changes to commit"
+        fi
         
   release:
     needs: build

@@ -1,3 +1,5 @@
+import { getApiHeaders, getApiUrl } from "@/lib/utils"
+
 export interface CommandInterpretation {
   commands: string[]
   explanation: string
@@ -13,11 +15,9 @@ export interface ContextInfo {
 
 export async function interpretCommand(naturalLanguage: string, context?: ContextInfo): Promise<CommandInterpretation> {
   try {
-    const response = await fetch("/api/ai", {
+    const response = await fetch(getApiUrl("/api/ai"), {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: getApiHeaders(),
       body: JSON.stringify({
         action: "interpret",
         input: naturalLanguage,
@@ -50,11 +50,9 @@ export async function interpretCommand(naturalLanguage: string, context?: Contex
 
 export async function explainCommand(command: string): Promise<string> {
   try {
-    const response = await fetch("/api/ai", {
+    const response = await fetch(getApiUrl("/api/ai"), {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: getApiHeaders(),
       body: JSON.stringify({
         action: "explain",
         input: command,
@@ -76,11 +74,9 @@ export async function explainCommand(command: string): Promise<string> {
 
 export async function suggestCommands(context: string): Promise<string[]> {
   try {
-    const response = await fetch("/api/ai", {
+    const response = await fetch(getApiUrl("/api/ai"), {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: getApiHeaders(),
       body: JSON.stringify({
         action: "suggest",
         input: context,
@@ -102,11 +98,9 @@ export async function suggestCommands(context: string): Promise<string[]> {
 
 export async function testAIConnection(): Promise<{ success: boolean; message: string }> {
   try {
-    const response = await fetch("/api/ai", {
+    const response = await fetch(getApiUrl("/api/ai"), {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: getApiHeaders(),
       body: JSON.stringify({
         action: "test",
         input: "test",

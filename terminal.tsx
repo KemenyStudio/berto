@@ -7,24 +7,43 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sparkles } from "lucide-react"
 import { shouldInterpretWithAI, interpretNaturalLanguage } from "./commands"
 import type { TerminalLine } from "./types/filesystem"
+import { getApiHeaders, getApiUrl, isElectron } from "@/lib/utils"
 
-const INITIAL_LINES: TerminalLine[] = [
-  { type: "info", content: "🤖 Hi, I'm Berto, your vibe terminal", timestamp: new Date() },
-  { type: "output", content: "", timestamp: new Date() },
-  { type: "output", content: "This is a terminal for humans. Theres no need to know commands, just vibes.", timestamp: new Date() },
-  { type: "output", content: "🧠 Ask me to do things like, create files, or show you folders, and I will do it.", timestamp: new Date() },
-  { type: "output", content: "", timestamp: new Date() },
-  { type: "output", content: "💡 I'll show you the command so you can learn how to do it in your real terminal", timestamp: new Date() },
-  { type: "info", content: "✨ Here are some examples: 'show me the files in this folder', 'make a project folder and call it 'bananas', 'help me find all the python files in this folder'", timestamp: new Date() },
-  { type: "output", content: "", timestamp: new Date() },
-  { type: "info", content: "🎯 Also, you can ask for help and I will list all the commands you can use", timestamp: new Date() }, 
-  { type: "output", content: "", timestamp: new Date() },
-  { type: "info", content: "⚡ This terminal now executes REAL commands on your system!", timestamp: new Date() },
-  { type: "output", content: "", timestamp: new Date() },
-]
+// Initial lines will be determined based on environment
+const getInitialLines = (): TerminalLine[] => {
+  const isElectronApp = typeof window !== 'undefined' && isElectron();
+  
+  const baseLines = [
+    { type: "info" as const, content: "🤖 Hi, I'm Berto, your vibe terminal", timestamp: new Date() },
+    { type: "output" as const, content: "", timestamp: new Date() },
+    { type: "output" as const, content: "This is a terminal for humans. Theres no need to know commands, just vibes.", timestamp: new Date() },
+    { type: "output" as const, content: "🧠 Ask me to do things like, create files, or show you folders, and I will do it.", timestamp: new Date() },
+    { type: "output" as const, content: "", timestamp: new Date() },
+    { type: "output" as const, content: "💡 I'll show you the command so you can learn how to do it in your real terminal", timestamp: new Date() },
+    { type: "info" as const, content: "✨ Here are some examples: 'show me the files in this folder', 'make a project folder and call it 'bananas', 'help me find all the python files in this folder'", timestamp: new Date() },
+    { type: "output" as const, content: "", timestamp: new Date() },
+    { type: "info" as const, content: "🎯 Also, you can ask for help and I will list all the commands you can use", timestamp: new Date() }, 
+    { type: "output" as const, content: "", timestamp: new Date() },
+  ];
+
+  if (isElectronApp) {
+    baseLines.push(
+      { type: "info" as const, content: "⚡ This terminal executes REAL commands on your local machine!", timestamp: new Date() },
+      { type: "info" as const, content: "🖥️  Desktop app mode - Full terminal access enabled", timestamp: new Date() },
+    );
+  } else {
+    baseLines.push(
+      { type: "info" as const, content: "🌐 Web demo mode - Read-only environment for safety", timestamp: new Date() },
+      { type: "info" as const, content: "📱 Download the desktop app for full terminal access", timestamp: new Date() },
+    );
+  }
+  
+  baseLines.push({ type: "output" as const, content: "", timestamp: new Date() });
+  return baseLines;
+};
 
 export default function Terminal() {
-  const [lines, setLines] = useState<TerminalLine[]>(INITIAL_LINES)
+  const [lines, setLines] = useState<TerminalLine[]>(getInitialLines())
   const [currentInput, setCurrentInput] = useState("")
   const [commandHistory, setCommandHistory] = useState<string[]>([])
   const [historyIndex, setHistoryIndex] = useState(-1)
@@ -61,9 +80,9 @@ export default function Terminal() {
     const initializeTerminal = async () => {
       try {
         // Get current working directory
-        const pwdResponse = await fetch('/api/execute', {
+        const pwdResponse = await fetch(getApiUrl('/api/execute'), {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: getApiHeaders(),
           body: JSON.stringify({ command: 'pwd' })
         });
         const pwdResult = await pwdResponse.json();
@@ -72,9 +91,9 @@ export default function Terminal() {
         }
 
         // Get username
-        const whoamiResponse = await fetch('/api/execute', {
+        const whoamiResponse = await fetch(getApiUrl('/api/execute'), {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: getApiHeaders(),
           body: JSON.stringify({ command: 'whoami' })
         });
         const whoamiResult = await whoamiResponse.json();
@@ -83,9 +102,9 @@ export default function Terminal() {
         }
 
         // Get hostname
-        const hostnameResponse = await fetch('/api/execute', {
+        const hostnameResponse = await fetch(getApiUrl('/api/execute'), {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: getApiHeaders(),
           body: JSON.stringify({ command: 'hostname' })
         });
         const hostnameResult = await hostnameResponse.json();
@@ -155,9 +174,9 @@ export default function Terminal() {
     currentWorkingDirectory?: string;
   }> => {
     try {
-      const response = await fetch('/api/execute', {
+      const response = await fetch(getApiUrl('/api/execute'), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getApiHeaders(),
         body: JSON.stringify({ 
           command,
           workingDirectory: currentWorkingDirectory 

@@ -1,8 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: process.env.ELECTRON_BUILD ? 'export' : undefined,
-  trailingSlash: true,
-  distDir: 'out',
+  // Only use static export when explicitly building for static deployment
+  output: process.env.STATIC_BUILD ? 'export' : undefined,
+  trailingSlash: process.env.STATIC_BUILD ? true : false,
+  distDir: process.env.STATIC_BUILD ? 'out' : '.next',
   env: {
     // Suppress npm-related warnings
     NPM_RC: '',

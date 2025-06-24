@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const platform = searchParams.get('platform')
@@ -20,8 +22,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid platform' }, { status: 400 })
   }
 
-  // In a real scenario, you'd want to check if the file exists
-  // For now, we'll redirect to the download URL
+  // Redirect to the download URL
   return NextResponse.redirect(new URL(downloadPath, request.url))
 }
 
@@ -30,8 +31,8 @@ export async function POST(request: NextRequest) {
   const body = await request.json()
   const { platform, userAgent } = body
   
-  // Here you could log to analytics service
-  console.log('Download requested:', { platform, userAgent, timestamp: new Date().toISOString() })
+  // Log analytics (in production, you'd save this to a database)
+  console.log(`Download tracked: ${platform} from ${userAgent}`)
   
-  return NextResponse.json({ success: true })
+  return NextResponse.json({ success: true, message: 'Download tracked' })
 } 

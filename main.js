@@ -2,7 +2,7 @@ const { app, BrowserWindow, shell } = require('electron');
 const path = require('path');
 
 function createWindow() {
-  const win = new BrowserWindow({
+  let win = new BrowserWindow({
     width: 1280,
     height: 800,
     minWidth: 800,
@@ -30,8 +30,20 @@ function createWindow() {
     win.loadURL('http://localhost:3001'); // Use port 3001 as shown in your logs
     win.webContents.openDevTools();
   } else {
-    win.loadFile('out/index.html');
+    // For production builds, connect to Vercel deployment
+    const productionUrl = 'https://berto-psi.vercel.app/';
+    console.log(`Loading production app from: ${productionUrl}`);
+    win.loadURL(productionUrl);
   }
+
+  // Inject Electron identifier after page loads
+  win.webContents.once('dom-ready', () => {
+    win.webContents.executeJavaScript(`
+      window.__ELECTRON__ = true;
+      window.__ELECTRON_VERSION__ = '${process.versions.electron}';
+      console.log('Electron environment detected and injected');
+    `);
+  });
 
   // Show window when ready
   win.once('ready-to-show', () => {
@@ -61,6 +73,10 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
+});
+
+app.on('before-quit', () => {
+  // Cleanup if needed
 });
 
 // Security: Prevent new window creation
