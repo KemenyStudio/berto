@@ -1,13 +1,18 @@
 {
   "name": "berto-ai-terminal",
   "version": "1.0.0",
-  "description": "Berto - AI Terminal Assistant powered by GPT-4.1. Terminal for humans. No commands, just vibes.",
+  "description": "Berto a vibe terminal built by https://kemeny.studio",
   "private": true,
+  "main": "main.js",
   "scripts": {
     "build": "next build",
     "dev": "next dev",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "electron": "electron .",
+    "electron-dev": "electron . --dev",
+    "build-electron": "next build && next export && electron-builder",
+    "dist": "npm run build && npm run build-electron"
   },
   "dependencies": {
     "@ai-sdk/openai": "latest",
@@ -66,8 +71,39 @@
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "electron": "^28.3.3",
+    "electron-builder": "^24.13.3",
     "postcss": "^8.5",
     "tailwindcss": "^3.4.17",
     "typescript": "^5"
+  },
+  "build": {
+    "appId": "com.kemenystudio.berto",
+    "productName": "Berto AI Terminal",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "out/**/*",
+      "main.js",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "public/icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "public/icon.icns",
+      "category": "public.app-category.developer-tools"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "public/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
   }
 }

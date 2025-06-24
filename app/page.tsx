@@ -2,6 +2,7 @@
 
 import Terminal from "../terminal"
 import MobileMessage from "../components/mobile-message"
+import Navigation from "../components/navigation"
 import { useIsMobile } from "../hooks/use-mobile"
 
 export default function Page() {
@@ -18,7 +19,10 @@ export default function Page() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {isMobile ? <MobileMessage /> : <Terminal />}
+      {!isMobile && <Navigation />}
+      <div className={!isMobile ? "pt-16" : ""}>
+        {isMobile ? <MobileMessage /> : <Terminal />}
+      </div>
     </div>
   )
 }

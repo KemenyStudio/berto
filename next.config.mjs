@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: process.env.ELECTRON_BUILD ? 'export' : undefined,
+  trailingSlash: true,
+  distDir: 'out',
   env: {
     // Suppress npm-related warnings
     NPM_RC: '',
