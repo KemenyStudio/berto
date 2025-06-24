@@ -516,12 +516,12 @@ export default function Terminal() {
 
         {/* Terminal Content */}
         <div
-          className="flex-1 p-6 cursor-text overflow-hidden relative z-10"
+          className="flex-1 px-8 py-6 cursor-text overflow-hidden relative z-10"
           onClick={() => inputRef.current?.focus()}
           style={{ fontSize: `${fontSize}px` }}
         >
           <ScrollArea className="h-full" ref={scrollRef}>
-            <div className="space-y-1 w-full">
+            <div className="space-y-1 w-full max-w-none">
               {lines.map((line, index) => renderLine(line, index))}
               <div className="flex items-center mt-4">
                 <span className="text-green-400 mr-3 font-mono text-sm font-medium flex-shrink-0">{getPrompt()}</span>
@@ -542,7 +542,7 @@ export default function Terminal() {
 
         {/* AI Thinking Indicator */}
         {aiThinking && (
-          <div className="px-6 py-2 border-t border-gray-800 bg-gray-900/50">
+          <div className="px-8 py-3 border-t border-gray-800 bg-gray-900/50">
             <div className="text-sm text-yellow-400 font-mono animate-pulse">
               {aiThinking}
             </div>
