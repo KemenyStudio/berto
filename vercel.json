@@ -14,15 +14,4 @@
   "env": {
     "OPENAI_API_KEY": "@openai_api_key"
   },
-  "headers": [
-    {
-      "source": "/downloads/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=86400"
-        }
-      ]
-    }
-  ]
 } 
