@@ -2,17 +2,17 @@
 
 import type React from "react"
 import { useState, useRef, useEffect } from "react"
-import { Input } from "@/components/ui/input"
+
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sparkles } from "lucide-react"
 import { shouldInterpretWithAI, interpretNaturalLanguage } from "./commands"
 import type { TerminalLine } from "./types/filesystem"
 import { getApiHeaders, getApiUrl } from "@/lib/utils"
-import FileUpload from "@/components/file-upload"
+
 
 // Initial lines will be determined based on environment
 const getInitialLines = (): TerminalLine[] => {
-  const baseLines = [
+  return [
     { type: "info" as const, content: "🤖 Hi, I'm Berto, your AI terminal!", timestamp: new Date() },
     { type: "output" as const, content: "", timestamp: new Date() },
     { type: "output" as const, content: "Terminal for humans. No commands needed, just vibes! 😎", timestamp: new Date() },
@@ -25,23 +25,9 @@ const getInitialLines = (): TerminalLine[] => {
     { type: "output" as const, content: "", timestamp: new Date() },
     { type: "info" as const, content: "💡 Or ask naturally: 'show files', 'help me', 'what can you do?'", timestamp: new Date() },
     { type: "output" as const, content: "", timestamp: new Date() },
+    { type: "info" as const, content: "⚡ This terminal executes REAL commands!", timestamp: new Date() },
+    { type: "output" as const, content: "", timestamp: new Date() },
   ];
-
-  // Check if we're likely on mobile (basic detection)
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-  
-  if (isMobile) {
-    baseLines.push(
-      { type: "info" as const, content: "📱 Mobile tip: Tap anywhere to focus input!", timestamp: new Date() }
-    );
-  } else {
-    baseLines.push(
-      { type: "info" as const, content: "⚡ This terminal executes REAL commands!", timestamp: new Date() }
-    );
-  }
-  
-  baseLines.push({ type: "output" as const, content: "", timestamp: new Date() });
-  return baseLines;
 };
 
 export default function Terminal() {
@@ -77,6 +63,26 @@ export default function Terminal() {
       setDirectoryContents([])
     }
   }
+
+  // Add mobile tip after hydration to avoid hydration mismatch
+  useEffect(() => {
+    const isMobile = window.innerWidth < 768;
+    if (isMobile) {
+      setLines(prevLines => {
+        // Replace the last info line with mobile tip
+        const newLines = [...prevLines];
+        const lastInfoIndex = newLines.findLastIndex(line => line.content === "⚡ This terminal executes REAL commands!");
+        if (lastInfoIndex !== -1) {
+          newLines[lastInfoIndex] = {
+            type: "info",
+            content: "📱 Mobile tip: Tap anywhere to focus input!",
+            timestamp: new Date()
+          };
+        }
+        return newLines;
+      });
+    }
+  }, []);
 
   // Get initial working directory and user info
   useEffect(() => {
@@ -452,37 +458,7 @@ export default function Terminal() {
     }
   }
 
-  // Handle file upload completion
-  const handleFileUploadComplete = (files: { name: string; size: number; path: string }[]) => {
-    const newLines: TerminalLine[] = [
-      {
-        type: "info",
-        content: `📁 Successfully uploaded ${files.length} file(s):`,
-        timestamp: new Date(),
-      },
-    ];
 
-    files.forEach(file => {
-      newLines.push({
-        type: "output",
-        content: `   • ${file.name} (${Math.round(file.size / 1024)}KB)`,
-        timestamp: new Date(),
-      });
-    });
-
-    newLines.push({
-      type: "info",
-      content: "💡 You can now use 'ls' to see your files or 'cat filename' to read them!",
-      timestamp: new Date(),
-    });
-
-    newLines.push({ type: "output", content: "", timestamp: new Date() });
-
-    setLines((prev) => [...prev, ...newLines]);
-    
-    // Update directory contents to show uploaded files
-    setTimeout(updateDirectoryContents, 100);
-  };
 
   const handleKeyDown = async (e: React.KeyboardEvent) => {
     if (isProcessing) {
@@ -582,16 +558,7 @@ export default function Terminal() {
           </div>
         </div>
 
-        {/* File Upload Section (only in remote mode) */}
-        {isRemoteMode && (
-          <div className="px-4 sm:px-8 py-3 sm:py-4 border-b border-gray-800">
-            <FileUpload
-              onUploadComplete={handleFileUploadComplete}
-              currentPath={currentWorkingDirectory}
-              isRemoteMode={isRemoteMode}
-            />
-          </div>
-        )}
+
 
         {/* Terminal Content */}
         <div
@@ -602,19 +569,20 @@ export default function Terminal() {
           <ScrollArea className="h-full" ref={scrollRef}>
             <div className="space-y-2 sm:space-y-1 w-full max-w-none">
               {lines.map((line, index) => renderLine(line, index))}
-              <div className="flex flex-col sm:flex-row sm:items-start mt-6 sm:mt-4 gap-2 sm:gap-3">
-                <span className="text-green-400 font-mono text-sm sm:text-sm font-medium flex-shrink-0">
+              <div className="flex items-baseline mt-6 sm:mt-4">
+                <span className="text-green-400 font-mono text-sm font-medium flex-shrink-0 mr-1">
                   {getPrompt()}
                 </span>
-                <Input
+                <input
                   ref={inputRef}
                   value={currentInput}
                   onChange={(e) => setCurrentInput(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  className="flex-1 bg-transparent border-none p-2 sm:p-0 text-white font-mono text-sm sm:text-sm focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500 min-w-0 border border-gray-600 sm:border-none rounded sm:rounded-none"
+                  className="flex-1 bg-transparent border-none outline-none text-white font-mono text-sm placeholder:text-gray-500 min-w-0"
                   placeholder={isProcessing ? "Processing..." : "Type command or ask naturally..."}
                   autoComplete="off"
                   disabled={isProcessing}
+                  style={{ height: 'auto', lineHeight: '1.2' }}
                 />
               </div>
             </div>

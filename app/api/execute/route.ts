@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { shellExecutor } from '@/services/shell-executor';
 import { hybridFileSystem } from '@/services/hybrid-filesystem';
 import { environmentDetector } from '@/services/environment-detector';
+import { getApiHeaders, getApiUrl } from '@/lib/utils';
 
 // Force dynamic for API functionality  
 export const dynamic = 'force-dynamic'
@@ -27,6 +28,65 @@ export async function POST(req: NextRequest) {
     // Handle cat command for file reading
     if (trimmedCommand.startsWith('cat ')) {
       const filePath = command.trim().substring(4);
+      
+      // Special handling for hack challenge files when in /var/games
+      if (shellExecutor.getCurrentWorkingDirectory() === '/var/games' && filePath === 'README_HACK') {
+        try {
+          const aiResponse = await fetch(getApiUrl("/api/ai"), {
+            method: "POST",
+            headers: getApiHeaders(),
+            body: JSON.stringify({
+              action: "hack_readme",
+              input: "Generate dynamic README_HACK content",
+            }),
+          });
+
+          if (aiResponse.ok) {
+            const aiData = await aiResponse.json();
+            return NextResponse.json({
+              stdout: aiData.content || 'Instructions loading failed...',
+              stderr: '',
+              exitCode: 0,
+              success: true,
+              currentWorkingDirectory: shellExecutor.getCurrentWorkingDirectory(),
+              isSimulated: true
+            });
+          }
+        } catch (error) {
+          console.error('AI README_HACK generation failed:', error);
+        }
+        
+        // Fallback to static content if AI fails
+        return NextResponse.json({
+          stdout: `🕵️ HACKER CHALLENGE INSTRUCTIONS
+
+1. INTEL GATHERING:
+   - Navigate to 'intel' directory
+   - Read all intelligence files
+   - Find CODE_1
+
+2. MATRIX DECODING:
+   - Check 'matrix.dat' file
+   - Decode the pattern to find CODE_2
+
+3. VAULT CRACKING:
+   - Enter the vault with the secret password
+   - Complete the puzzle for CODE_3
+
+Once you have all 3 codes, check 'victory.txt'!
+
+💡 HINTS:
+- Use 'ls -la' to see hidden files
+- Some files need special commands
+- The password was mentioned somewhere...`,
+          stderr: '',
+          exitCode: 0,
+          success: true,
+          currentWorkingDirectory: shellExecutor.getCurrentWorkingDirectory(),
+          isSimulated: true
+        });
+      }
+      
       const result = await hybridFileSystem.readFile(filePath);
       return NextResponse.json({
         stdout: result.content || '',
@@ -42,6 +102,30 @@ export async function POST(req: NextRequest) {
     if (trimmedCommand.startsWith('ls') || trimmedCommand === 'ls') {
       const pathMatch = command.match(/ls\s+(.+)/);
       const dirPath = pathMatch ? pathMatch[1].replace(/^-\w+\s+/, '') : '.';
+      
+      // Special handling for /var/games directory listing
+      if (shellExecutor.getCurrentWorkingDirectory() === '/var/games' && (dirPath === '.' || dirPath === '/var/games')) {
+        const hackFiles = [
+          'drwxr-xr-x 1 games games 4096 Dec 25 12:00 .',
+          'drwxr-xr-x 1 root  root  4096 Dec 25 12:00 ..',
+          '-rw-r--r-- 1 games games  445 Dec 25 12:00 README_HACK',
+          '-rwxr-xr-x 1 games games  512 Dec 25 12:00 start_hack.sh',
+          'drwxr-xr-x 1 games games 4096 Dec 25 12:00 intel',
+          '-rw-r--r-- 1 games games  334 Dec 25 12:00 matrix.dat',
+          'drwx------ 1 games games 4096 Dec 25 12:00 vault',
+          '-rw-r--r-- 1 games games  445 Dec 25 12:00 victory.txt'
+        ];
+        
+        return NextResponse.json({
+          stdout: `total 8\n${hackFiles.join('\n')}`,
+          stderr: '',
+          exitCode: 0,
+          success: true,
+          currentWorkingDirectory: shellExecutor.getCurrentWorkingDirectory(),
+          isSimulated: true
+        });
+      }
+      
       const result = await hybridFileSystem.listDirectory(dirPath);
       return NextResponse.json({
         stdout: result.content || '',
@@ -68,6 +152,43 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    // Handle hint command for hack challenge
+    if (trimmedCommand === 'hint' && shellExecutor.getCurrentWorkingDirectory() === '/var/games') {
+      try {
+        const aiResponse = await fetch(getApiUrl("/api/ai"), {
+          method: "POST",
+          headers: getApiHeaders(),
+          body: JSON.stringify({
+            action: "hack_hint",
+            input: "Generate a personalized hint for hack challenge",
+          }),
+        });
+
+        if (aiResponse.ok) {
+          const aiData = await aiResponse.json();
+          return NextResponse.json({
+            stdout: `🤖 AI HACKER ASSISTANT\n\n${aiData.content}\n\n💡 Try: ls, cat README_HACK, or ask for another hint!`,
+            stderr: '',
+            exitCode: 0,
+            success: true,
+            currentWorkingDirectory: shellExecutor.getCurrentWorkingDirectory(),
+            isSimulated: true
+          });
+        }
+      } catch (error) {
+        console.error('AI hint generation failed:', error);
+      }
+      
+      return NextResponse.json({
+        stdout: `🤖 AI HACKER ASSISTANT\n\n💡 You're in the /var/games directory now. Try these commands:\n\n• ls - see all available files\n• cat README_HACK - read the mission briefing\n• ls intel - check the intel directory\n• cat matrix.dat - examine the encrypted data\n\nStuck? Type 'hint' again for more help!`,
+        stderr: '',
+        exitCode: 0,
+        success: true,
+        currentWorkingDirectory: shellExecutor.getCurrentWorkingDirectory(),
+        isSimulated: true
+      });
+    }
+
     // Handle help commands
     if (trimmedCommand === 'help' || trimmedCommand === 'list all commands' || trimmedCommand.includes('what commands') || trimmedCommand.includes('show commands')) {
       return NextResponse.json({
@@ -81,7 +202,8 @@ export async function POST(req: NextRequest) {
                '• pwd               - Show current directory\n' +
                '• cd directory      - Change directory\n\n' +
                '🎮 FUN COMMANDS:\n' +
-               '• hack              - Start cyber hacker challenge\n' +
+               '• hack              - Start AI-powered cyber hacker challenge\n' +
+               '• hint              - Get AI hints (when in hack challenge)\n' +
                '• joke              - Random programming joke\n' +
                '• fortune           - Get a random fortune\n' +
                '• cat /etc/motd     - See ASCII art banner\n\n' +
@@ -106,25 +228,65 @@ export async function POST(req: NextRequest) {
 
     // Handle fun easter egg commands
     if (trimmedCommand === 'hack') {
-      return NextResponse.json({
-        stdout: '🎮 Starting hack challenge...\nNavigating to /var/games...\n\n' +
-               '#!/bin/bash\n\n🎮 WELCOME TO CYBER HACK CHALLENGE 🎮\n\n' +
-               '======================================\n' +
-               '    UNAUTHORIZED ACCESS DETECTED\n' +
-               '======================================\n\n' +
-               'You\'ve stumbled into the mainframe...\n\n' +
-               'MISSION: Find the 3 hidden access codes\n' +
-               '1. Check the \'intel\' directory\n' +
-               '2. Decode the matrix file\n' +
-               '3. Crack the vault\n\n' +
-               'Type \'cat README_HACK\' for instructions!\n\n' +
-               'Good luck, hacker! 😎',
-        stderr: '',
-        exitCode: 0,
-        success: true,
-        currentWorkingDirectory: '/var/games',
-        isSimulated: true
-      });
+      // Generate dynamic, personalized hack challenge using AI
+      try {
+        const aiResponse = await fetch(getApiUrl("/api/ai"), {
+          method: "POST",
+          headers: getApiHeaders(),
+          body: JSON.stringify({
+            action: "hack_challenge_intro",
+            input: "Generate a personalized cyber hack challenge intro",
+          }),
+        });
+
+        let dynamicIntro = '';
+        if (aiResponse.ok) {
+          const aiData = await aiResponse.json();
+          dynamicIntro = aiData.content || '';
+        }
+
+        return NextResponse.json({
+          stdout: '🎮 Starting AI-powered hack challenge...\nNavigating to /var/games...\n\n' +
+                 '#!/bin/bash\n\n🎮 WELCOME TO CYBER HACK CHALLENGE 🎮\n\n' +
+                 '======================================\n' +
+                 '    UNAUTHORIZED ACCESS DETECTED\n' +
+                 '======================================\n\n' +
+                 (dynamicIntro || 'You\'ve stumbled into the mainframe...') + '\n\n' +
+                 'MISSION: Find the 3 hidden access codes\n' +
+                 '1. Check the \'intel\' directory\n' +
+                 '2. Decode the matrix file\n' +
+                 '3. Crack the vault\n\n' +
+                 'Type \'cat README_HACK\' for AI-generated instructions!\n\n' +
+                 'Good luck, hacker! 😎\n\n' +
+                 '💡 New: AI will adapt challenges based on your progress!',
+          stderr: '',
+          exitCode: 0,
+          success: true,
+          currentWorkingDirectory: '/var/games',
+          isSimulated: true
+        });
+      } catch (error) {
+        // Fallback to original if AI fails
+        return NextResponse.json({
+          stdout: '🎮 Starting hack challenge...\nNavigating to /var/games...\n\n' +
+                 '#!/bin/bash\n\n🎮 WELCOME TO CYBER HACK CHALLENGE 🎮\n\n' +
+                 '======================================\n' +
+                 '    UNAUTHORIZED ACCESS DETECTED\n' +
+                 '======================================\n\n' +
+                 'You\'ve stumbled into the mainframe...\n\n' +
+                 'MISSION: Find the 3 hidden access codes\n' +
+                 '1. Check the \'intel\' directory\n' +
+                 '2. Decode the matrix file\n' +
+                 '3. Crack the vault\n\n' +
+                 'Type \'cat README_HACK\' for instructions!\n\n' +
+                 'Good luck, hacker! 😎',
+          stderr: '',
+          exitCode: 0,
+          success: true,
+          currentWorkingDirectory: '/var/games',
+          isSimulated: true
+        });
+      }
     }
 
     if (trimmedCommand === 'fortune') {

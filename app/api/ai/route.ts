@@ -181,6 +181,141 @@ Be concise but thorough, and always educational.`,
         }
       }
 
+      case "hack_challenge_intro": {
+        try {
+          const { text } = await generateText({
+            model: openai("gpt-4.1-2025-04-14"),
+            system: `You are Berto, a cyber security challenge game master. Generate exciting, immersive hack challenge introductions that make users feel like elite hackers. 
+            
+Create dynamic, engaging scenarios that:
+- Set up a compelling cyberpunk/hacker atmosphere
+- Provide motivation for finding the 3 codes
+- Include realistic-sounding tech jargon
+- Make the user feel like they're in a movie
+- Keep it concise but exciting (2-3 sentences max)
+- Use present tense and direct address
+- Avoid repetitive phrases from previous sessions
+
+Examples of good intros:
+- "You've breached the quantum firewall of Nexus Corp's central server. System alerts are cascading - you have minutes before security traces your signal."
+- "The anonymous tip was right - this server contains classified Project Midnight files. Three access codes protect the data, but you've already bypassed their outer defenses."
+- "Welcome to the shadow network, operative. Your mission: extract the three encryption keys before the AI defense system activates."`,
+            prompt: `Generate a fresh, exciting cyber hack challenge introduction that sets up the mission to find 3 access codes. Make it feel like the user is a skilled hacker who just gained unauthorized access.`,
+            temperature: 0.8,
+            maxTokens: 150,
+          })
+
+          return NextResponse.json({ content: text.trim() })
+        } catch (error) {
+          console.error("Berto hack challenge intro error:", error)
+          return NextResponse.json({ content: "You've stumbled into a highly classified system. The mainframe is yours to explore, but time is running out..." })
+        }
+      }
+
+      case "hack_readme": {
+        try {
+          const { text } = await generateText({
+            model: openai("gpt-4.1-2025-04-14"),
+            system: `You are Berto, an AI hacker challenge guide. Generate dynamic, personalized README_HACK instructions that adapt to make each playthrough unique.
+
+Create instructions that:
+- Maintain the 3-mission structure (intel, matrix, vault)
+- Add AI-generated hints and tips
+- Include randomized challenges within each mission
+- Use hacker terminology and cyber language
+- Provide adaptive difficulty hints
+- Make it feel like authentic classified intel
+- Keep the core structure but vary the details
+
+Format like classified intelligence briefing:
+🕵️ [CLASSIFICATION LEVEL] HACKER CHALLENGE BRIEFING
+
+MISSION PARAMETERS:
+1. INTEL GATHERING
+2. MATRIX DECODING  
+3. VAULT PENETRATION
+
+Include dynamic hints, warnings about security measures, and personalized advice.`,
+            prompt: `Generate personalized hack challenge instructions (README_HACK content) with dynamic hints and challenges while maintaining the 3-mission structure.`,
+            temperature: 0.7,
+            maxTokens: 400,
+          })
+
+          return NextResponse.json({ content: text.trim() })
+        } catch (error) {
+          console.error("Berto hack README error:", error)
+          return NextResponse.json({ 
+            content: `🕵️ HACKER CHALLENGE INSTRUCTIONS
+
+1. INTEL GATHERING:
+   - Navigate to 'intel' directory
+   - Read all intelligence files
+   - Find CODE_1
+
+2. MATRIX DECODING:
+   - Check 'matrix.dat' file
+   - Decode the pattern to find CODE_2
+
+3. VAULT CRACKING:
+   - Enter the vault with the secret password
+   - Complete the puzzle for CODE_3
+
+Once you have all 3 codes, check 'victory.txt'!
+
+💡 HINTS:
+- Use 'ls -la' to see hidden files
+- Some files need special commands
+- The password was mentioned somewhere...` 
+          })
+        }
+      }
+
+      case "hack_hint": {
+        try {
+          const { text } = await generateText({
+            model: openai("gpt-4.1-2025-04-14"),
+            system: `You are Berto, an AI-powered hacker challenge assistant. Generate helpful, personalized hints for users who are stuck in the cyber challenge.
+
+Your hints should:
+- Be encouraging and supportive
+- Provide specific, actionable advice
+- Use hacker/cyber terminology
+- Vary each time to avoid repetition
+- Guide without giving away the full solution
+- Suggest specific commands to try
+- Be concise but helpful (2-3 sentences)
+
+Available commands they can use:
+- ls (list files)
+- cat filename (read files)
+- cd directory (change directory)
+- hint (get more hints)
+
+The challenge structure:
+1. Intel directory contains classified files
+2. Matrix.dat has binary code to decode
+3. Vault requires a password (C0D3R5_0NLY)
+4. Victory.txt shows completion
+
+Give different types of hints randomly:
+- Command suggestions
+- Next step guidance  
+- Decoding tips
+- Exploration encouragement`,
+            prompt: `Generate a personalized, helpful hint for someone playing the hack challenge. Make it encouraging and specific.`,
+            temperature: 0.8,
+            maxTokens: 150,
+          })
+
+          return NextResponse.json({ content: text.trim() })
+        } catch (error) {
+          console.error("Berto hack hint error:", error)
+          return NextResponse.json({ 
+            content: "🔍 HINT: Try exploring with 'ls' to see what files are available. Each directory contains clues for the next step. Don't forget to read the README_HACK for the full mission briefing!"
+          })
+        }
+      }
+
       case "suggest": {
         try {
           const { text } = await generateText({
