@@ -13,10 +13,7 @@
     "lint": "next lint",
     "start": "next start",
     "electron": "electron .",
-    "electron-dev": "electron . --dev",
-    "electron-builder": "electron-builder",
-    "build-electron": "pnpm run build-static && electron-builder",
-    "dist": "pnpm run build-static && electron-builder"
+    "electron-dev": "electron . --dev"
   },
   "dependencies": {
     "@ai-sdk/openai": "latest",
@@ -76,47 +73,11 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "electron": "28.3.3",
-    "electron-builder": "^24.13.3",
     "eslint": "^9.29.0",
     "eslint-config-next": "^15.3.4",
     "postcss": "^8.5",
     "tailwindcss": "^3.4.17",
     "typescript": "^5"
-  },
-  "build": {
-    "appId": "com.kemenystudio.berto",
-    "productName": "Berto AI Terminal",
-    "directories": {
-      "output": "dist"
-    },
-    "files": [
-      "out/**/*",
-      "main.js",
-      "package.json",
-      "public/icon.*"
-    ],
-    "extraResources": [
-      "public/"
-    ],
-    "win": {
-      "target": "nsis",
-      "icon": "public/icon.ico"
-    },
-    "mac": {
-      "target": "dmg",
-      "icon": "public/icon.icns",
-      "category": "public.app-category.developer-tools",
-      "hardenedRuntime": false,
-      "gatekeeperAssess": false
-    },
-    "linux": {
-      "target": "AppImage",
-      "icon": "public/icon.png"
-    },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true
-    }
   },
   "pnpm": {
     "ignoredBuiltDependencies": [

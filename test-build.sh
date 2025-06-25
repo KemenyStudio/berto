@@ -18,7 +18,4 @@ ls -la out/ 2>/dev/null || echo "No out/ directory found"
 ls -la public/ 2>/dev/null || echo "No public/ directory found"
 
 echo ""
-echo "=== Testing electron builder (dry run) ==="
-pnpm run electron-builder -- --dry-run
-
-echo "=== Build test complete ===" 
+echo "=== Build test complete ==="

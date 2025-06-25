@@ -7,11 +7,10 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sparkles } from "lucide-react"
 import { shouldInterpretWithAI, interpretNaturalLanguage } from "./commands"
 import type { TerminalLine } from "./types/filesystem"
-import { getApiHeaders, getApiUrl, isElectron } from "@/lib/utils"
+import { getApiHeaders, getApiUrl } from "@/lib/utils"
 
 // Initial lines will be determined based on environment
 const getInitialLines = (): TerminalLine[] => {
-  const isElectronApp = typeof window !== 'undefined' && isElectron();
   
   const baseLines = [
     { type: "info" as const, content: "🤖 Hi, I'm Berto, your vibe terminal", timestamp: new Date() },
@@ -26,17 +25,9 @@ const getInitialLines = (): TerminalLine[] => {
     { type: "output" as const, content: "", timestamp: new Date() },
   ];
 
-  if (isElectronApp) {
-    baseLines.push(
-      { type: "info" as const, content: "⚡ This terminal executes REAL commands on your local machine!", timestamp: new Date() },
-      { type: "info" as const, content: "🖥️  Desktop app mode - Full terminal access enabled", timestamp: new Date() },
-    );
-  } else {
-    baseLines.push(
-      { type: "info" as const, content: "🌐 Web demo mode - Read-only environment for safety", timestamp: new Date() },
-      { type: "info" as const, content: "📱 Download the desktop app for full terminal access", timestamp: new Date() },
-    );
-  }
+  baseLines.push(
+    { type: "info" as const, content: "⚡ This terminal executes REAL commands on your machine!", timestamp: new Date() }
+  );
   
   baseLines.push({ type: "output" as const, content: "", timestamp: new Date() });
   return baseLines;
