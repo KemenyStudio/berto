@@ -8,13 +8,15 @@
   "main": "main.js",
   "scripts": {
     "build": "next build",
+    "build-static": "STATIC_BUILD=true next build",
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start",
     "electron": "electron .",
     "electron-dev": "electron . --dev",
-    "build-electron": "next build && electron-builder",
-    "dist": "pnpm run build && pnpm run build-electron"
+    "electron-builder": "electron-builder",
+    "build-electron": "pnpm run build-static && electron-builder",
+    "dist": "pnpm run build-static && electron-builder"
   },
   "dependencies": {
     "@ai-sdk/openai": "latest",
@@ -73,8 +75,10 @@
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "electron": "^28.3.3",
+    "electron": "28.3.3",
     "electron-builder": "^24.13.3",
+    "eslint": "^9.29.0",
+    "eslint-config-next": "^15.3.4",
     "postcss": "^8.5",
     "tailwindcss": "^3.4.17",
     "typescript": "^5"
@@ -88,7 +92,11 @@
     "files": [
       "out/**/*",
       "main.js",
-      "package.json"
+      "package.json",
+      "public/icon.*"
+    ],
+    "extraResources": [
+      "public/"
     ],
     "win": {
       "target": "nsis",
@@ -97,7 +105,9 @@
     "mac": {
       "target": "dmg",
       "icon": "public/icon.icns",
-      "category": "public.app-category.developer-tools"
+      "category": "public.app-category.developer-tools",
+      "hardenedRuntime": false,
+      "gatekeeperAssess": false
     },
     "linux": {
       "target": "AppImage",
@@ -107,5 +117,11 @@
       "oneClick": false,
       "allowToChangeInstallationDirectory": true
     }
+  },
+  "pnpm": {
+    "ignoredBuiltDependencies": [
+      "electron",
+      "sharp"
+    ]
   }
 }

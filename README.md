@@ -190,6 +190,25 @@ berto-ai-terminal/
 3. Add your `OPENAI_API_KEY` environment variable
 4. Deploy!
 
+**Note**: Vercel configuration is automatically set up with `vercel.json` which uses pnpm for builds.
+
+### Electron Desktop App
+
+Build desktop applications for Windows, macOS, and Linux:
+
+```bash
+# Build for all platforms
+pnpm run dist
+
+# Build for specific platform  
+pnpm run build-static
+pnpm run electron-builder -- --win    # Windows
+pnpm run electron-builder -- --mac    # macOS
+pnpm run electron-builder -- --linux  # Linux
+```
+
+The desktop apps are automatically built via GitHub Actions and available in the `/public/downloads/` directory.
+
 ### Other Platforms
 
 Berto works on any platform that supports Next.js:
@@ -197,6 +216,45 @@ Berto works on any platform that supports Next.js:
 - Railway
 - Heroku
 - Docker
+
+## 🔧 Build Troubleshooting
+
+### Common Issues
+
+**Vercel Deployment Fails**
+- Ensure your `vercel.json` uses `pnpm` (not npm) for builds
+- Check that `OPENAI_API_KEY` is set in Vercel environment variables
+- Verify the build command: `pnpm run build`
+
+**GitHub Actions Electron Build Fails**  
+- Check that all icon files exist in `/public/` directory:
+  - `icon.png` (Linux)
+  - `icon.icns` (macOS) 
+  - `icon.ico` (Windows)
+- Verify Node.js version compatibility (20+)
+- Ensure pnpm lockfile is up to date: `pnpm install --frozen-lockfile`
+
+**Local Build Issues**
+- Run the test script: `./test-build.sh` 
+- Ensure all dependencies are installed: `pnpm install`
+- For static builds: `STATIC_BUILD=true pnpm run build`
+- Check output directory: `ls -la out/`
+
+### Debug Commands
+
+```bash
+# Test the build process
+./test-build.sh
+
+# Check dependencies
+pnpm list --depth=0
+
+# Test electron builder without building
+pnpm run electron-builder -- --dry-run
+
+# Build static files only
+STATIC_BUILD=true pnpm run build
+```
 
 ## 📝 Environment Variables
 
