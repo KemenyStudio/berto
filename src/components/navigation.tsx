@@ -14,7 +14,7 @@ export default function Navigation() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => window.open('https://github.com/KemenyStudio/vibeterminal', '_blank')}
+            onClick={() => window.open('https://github.com/KemenyStudio/berto', '_blank')}
           >
             GitHub
           </Button>

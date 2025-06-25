@@ -5,8 +5,8 @@ import { useState, useRef, useEffect } from "react"
 
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sparkles } from "lucide-react"
-import { shouldInterpretWithAI, interpretNaturalLanguage } from "./commands"
-import type { TerminalLine } from "./types/filesystem"
+import { shouldInterpretWithAI, interpretNaturalLanguage } from "../commands"
+import type { TerminalLine } from "../types/filesystem"
 import { getApiHeaders, getApiUrl } from "@/lib/utils"
 
 

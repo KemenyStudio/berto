@@ -1,10 +1,10 @@
 {
   "name": "berto-ai-terminal",
   "version": "1.0.0",
-  "description": "Berto a vibe terminal built by https://kemeny.studio",
-  "author": "Kemeny Studio <hello@kemeny.studio>",
-  "homepage": "https://kemeny.studio",
-  "private": true,
+  "description": "AI-powered terminal that speaks human - natural language terminal interface",
+  "author": "Berto Terminal Contributors",
+  "homepage": "https://github.com/kemenystudio/berto",
+  "license": "MIT",
   "scripts": {
     "build": "next build",
     "build-static": "STATIC_BUILD=true next build",

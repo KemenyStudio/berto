@@ -1,7 +1,7 @@
 {
   "name": "Berto AI Terminal",
   "short_name": "Berto",
-  "description": "Berto a vibe terminal built by https://kemeny.studio",
+  "description": "AI-powered terminal that speaks human - natural language terminal interface",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#1f2937",
@@ -21,13 +21,5 @@
       "purpose": "maskable any"
     }
   ],
-  "categories": ["developer", "productivity", "utilities"],
-  "screenshots": [
-    {
-      "src": "/screenshot-desktop.png",
-      "sizes": "1280x800",
-      "type": "image/png",
-      "form_factor": "wide"
-    }
-  ]
+  "categories": ["developer", "productivity", "utilities"]
 } 

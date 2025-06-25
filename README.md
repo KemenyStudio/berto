@@ -1,6 +1,6 @@
 # 🤖 Berto Terminal
 
-> **AI-powered terminal that speaks human** - Built by [Kemeny Studio](https://kemeny.studio)
+> **AI-powered terminal that speaks human**
 
 A revolutionary terminal experience where you can type commands OR ask in natural language. Berto is your AI assistant that understands both traditional shell commands and conversational requests.
 
@@ -29,7 +29,7 @@ A revolutionary terminal experience where you can type commands OR ask in natura
 
 ```bash
 # Clone the repository
-git clone <your-repo-url>
+git clone https://github.com/kemenystudio/berto.git
 cd berto
 
 # Install dependencies (use pnpm for best results)
@@ -134,23 +134,29 @@ For other deployment platforms, ensure:
 
 ```
 berto/
-├── app/                 # Next.js app router
-│   ├── api/            # API routes
-│   │   ├── ai/         # AI command processing
-│   │   └── execute/    # Command execution
-│   ├── layout.tsx      # Root layout
-│   └── page.tsx        # Main page
-├── components/         # React components
-│   └── ui/            # Shadcn/ui components
-├── services/          # Core services
-│   ├── ai-interpreter.ts
-│   ├── shell-executor.ts
-│   ├── hybrid-filesystem.ts
-│   └── environment-detector.ts
-├── hooks/             # Custom React hooks
-├── lib/               # Utilities
-├── types/             # TypeScript definitions
-└── terminal.tsx       # Main terminal component
+├── app/                    # Next.js app router
+│   ├── api/               # API routes
+│   │   ├── ai/            # AI command processing
+│   │   └── execute/       # Command execution
+│   ├── layout.tsx         # Root layout
+│   └── page.tsx           # Main page
+├── src/                   # Source code
+│   ├── components/        # React components
+│   │   ├── ui/           # Shadcn/ui components
+│   │   └── terminal.tsx  # Main terminal component
+│   ├── services/         # Core services
+│   │   ├── ai-interpreter.ts
+│   │   ├── shell-executor.ts
+│   │   ├── hybrid-filesystem.ts
+│   │   └── environment-detector.ts
+│   ├── hooks/            # Custom React hooks
+│   ├── lib/              # Utilities
+│   ├── types/            # TypeScript definitions
+│   ├── commands/         # Command definitions
+│   └── styles/           # CSS styles
+├── config/               # Configuration files
+├── public/               # Static assets
+└── [config files]       # Next.js, TypeScript, etc.
 ```
 
 ### Key Services
@@ -195,20 +201,15 @@ Contributions are welcome! Please:
 
 ## 📝 License
 
-This project is built with ❤️ by [Kemeny Studio](https://kemeny.studio).
+MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
 
-## 🆘 Support
+## 🙏 Acknowledgments
 
-Having issues? 
-
-1. **Check the console** for error messages
-2. **Verify your OpenAI API key** is set correctly
-3. **Try both natural language and direct commands**
-4. **Check your internet connection** for AI features
-
-For bugs and feature requests, please create an issue in the repository.
+- Built with Next.js, React, and OpenAI
+- UI components powered by Radix UI and Tailwind CSS
+- Terminal experience inspired by modern CLI tools
 
 ---
 

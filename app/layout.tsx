@@ -1,14 +1,14 @@
 import type { Metadata, Viewport } from 'next'
-import './globals.css'
+import '../src/styles/globals.css'
 
 export const metadata: Metadata = {
   title: 'Berto - AI Terminal Assistant',
-  description: 'Berto a vibe terminal built by https://kemeny.studio',
+  description: 'AI-powered terminal that speaks human - natural language terminal interface',
   generator: 'Berto AI Terminal',
   keywords: ['terminal', 'AI', 'assistant', 'command line', 'CLI', 'natural language'],
-  authors: [{ name: 'Kemeny Studio', url: 'https://kemeny.studio' }],
-  creator: 'Kemeny Studio',
-  publisher: 'Kemeny Studio',
+  authors: [{ name: 'Berto Terminal Contributors' }],
+  creator: 'Berto Terminal Contributors',
+  publisher: 'Berto Terminal Contributors',
   icons: {
     icon: [
       { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
