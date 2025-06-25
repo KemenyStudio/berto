@@ -28,7 +28,7 @@ export default function MobileMessage() {
           <div className="max-w-md w-full space-y-4">
             {/* Terminal-style welcome message */}
             <div className="font-mono text-sm leading-relaxed space-y-2">
-              <div className="text-white">🤖 Berto's terminal experience is optimized for desktop and larger screens where you can fully enjoy the interactive command-line interface.</div>
+              <div className="text-white">🤖 Berto&apos;s terminal experience is optimized for desktop and larger screens where you can fully enjoy the interactive command-line interface.</div>
               <div className="text-white"></div>
             </div>
           </div>
