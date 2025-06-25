@@ -13,7 +13,7 @@
     "start": "next start",
     "electron": "electron .",
     "electron-dev": "electron . --dev",
-    "build-electron": "next build && electron-builder",
+    "build-electron": "STATIC_BUILD=true next build && electron-builder",
     "dist": "pnpm run build && pnpm run build-electron"
   },
   "dependencies": {

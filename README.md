@@ -57,6 +57,21 @@ Berto is an AI-powered terminal assistant that makes the command line accessible
 5. **Open your browser**
    Go to [http://localhost:3000](http://localhost:3000)
 
+## 🖥️ Electron Desktop App
+
+Build a standalone desktop version that only relies on your OpenAI API key:
+
+```bash
+# Build the static web app and package Electron
+pnpm run build-electron
+
+# macOS example output is in the `dist` folder
+open dist
+```
+
+Run the resulting `.dmg` on macOS or share it with others. The app works
+offline and communicates only with OpenAI for AI features.
+
 ## 🎯 How to Use Berto
 
 ### Natural Language Commands

@@ -27,13 +27,13 @@ function createWindow() {
   // Load the app
   const isDev = process.argv.includes('--dev');
   if (isDev) {
-    win.loadURL('http://localhost:3001'); // Use port 3001 as shown in your logs
+    win.loadURL('http://localhost:3001'); // Use port 3001 in dev mode
     win.webContents.openDevTools();
   } else {
-    // For production builds, connect to Vercel deployment
-    const productionUrl = 'https://berto-psi.vercel.app/';
-    console.log(`Loading production app from: ${productionUrl}`);
-    win.loadURL(productionUrl);
+    // Load the static build packaged with the app
+    const indexPath = path.join(__dirname, 'out', 'index.html');
+    console.log(`Loading local file: ${indexPath}`);
+    win.loadFile(indexPath);
   }
 
   // Inject Electron identifier after page loads
