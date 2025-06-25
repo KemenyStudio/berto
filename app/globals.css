@@ -2,6 +2,35 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Mobile optimizations for terminal */
+@media (max-width: 768px) {
+  html {
+    /* Prevent zoom on input focus */
+    font-size: 16px;
+  }
+  
+  /* Improve touch targets */
+  input, button, textarea {
+    min-height: 44px;
+  }
+  
+  /* Better text rendering on mobile */
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* Prevent horizontal scrolling */
+  body {
+    overflow-x: hidden;
+  }
+  
+  /* Improve input experience */
+  input {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+}
+
 body {
   font-family: Arial, Helvetica, sans-serif;
 }

@@ -113,6 +113,30 @@ export function shouldInterpretWithAI(input: string): boolean {
   // Empty input - no interpretation needed
   if (!trimmedInput) return false
   
+  // Specific commands that should NOT be interpreted by AI (handle directly)
+  const directCommands = [
+    'help',
+    'list all commands',
+    'show all commands', 
+    'what commands',
+    'show commands',
+    'available commands',
+    'hack',
+    'joke',
+    'fortune'
+  ]
+  
+  for (const cmd of directCommands) {
+    if (trimmedInput === cmd || trimmedInput.startsWith(cmd + ' ')) {
+      return false
+    }
+  }
+  
+  // Don't interpret help-related queries that should show command list
+  if (trimmedInput.includes('help') && (trimmedInput.includes('command') || trimmedInput.includes('list'))) {
+    return false
+  }
+  
   // Check for greetings and casual conversation patterns
   const conversationalPatterns = [
     /^(hi|hello|hey|yo|sup|what's up|whats up|good morning|good afternoon|good evening|howdy|greetings)/,

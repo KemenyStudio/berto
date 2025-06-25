@@ -5,15 +5,12 @@
   "author": "Kemeny Studio <hello@kemeny.studio>",
   "homepage": "https://kemeny.studio",
   "private": true,
-  "main": "main.js",
   "scripts": {
     "build": "next build",
     "build-static": "STATIC_BUILD=true next build",
     "dev": "next dev",
     "lint": "next lint",
-    "start": "next start",
-    "electron": "electron .",
-    "electron-dev": "electron . --dev"
+    "start": "next start"
   },
   "dependencies": {
     "@ai-sdk/openai": "latest",
@@ -72,7 +69,6 @@
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "electron": "28.3.3",
     "eslint": "^9.29.0",
     "eslint-config-next": "^15.3.4",
     "postcss": "^8.5",
@@ -81,7 +77,6 @@
   },
   "pnpm": {
     "ignoredBuiltDependencies": [
-      "electron",
       "sharp"
     ]
   }

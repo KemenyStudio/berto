@@ -15,6 +15,12 @@ Berto is an AI-powered terminal assistant that makes the command line accessible
 - 🚀 **Multi-step Operations**: Break down complex tasks into simple steps
 - 💡 **Smart Suggestions**: Get helpful command recommendations
 - 🌙 **Beautiful Dark Theme**: [Cursor IDE-inspired color palette][[memory:8490515909716920229]]
+- 🌐 **Hybrid Mode**: Works locally with real files AND remotely with uploaded files
+- 📁 **File Upload**: Upload local files when running on remote servers (Vercel)
+- 🔄 **Environment Detection**: Automatically adapts to local vs remote deployment
+- 📱 **Mobile Friendly**: Fully responsive design - works on phones, tablets, and desktop
+- 🎮 **Hidden Games & Easter Eggs**: Secret hacker challenges, ASCII art, and fun surprises
+- 🕵️ **Interactive Adventures**: Multi-step cyber security challenges and puzzles
 
 ## 🚀 Quick Start
 
@@ -88,6 +94,31 @@ Berto also supports all standard terminal commands:
 - **`explain [command]`** - Get detailed explanation of any command
 - **`suggest [context]`** - Get command suggestions based on context
 
+### 🎮 Easter Eggs & Hidden Games
+
+- **`hack`** - Start the cyber hacker challenge adventure!
+- **`fortune`** - Get a random programmer fortune
+- **`joke`** - Hear a random programming joke
+- **`cat /etc/motd`** - See the system welcome message with ASCII art
+- **`ls -la`** - Discover hidden files (files starting with .)
+- **`cd /var/games`** - Enter the games directory
+- **`cd /opt/retro`** - Visit the retro zone with ASCII art and jokes
+
+### 🕵️ Hacker Challenge Guide
+
+1. **Start**: Type `hack` to begin the cyber challenge
+2. **Explore**: Navigate to `/var/games` and read `README_HACK`
+3. **Mission 1**: Check the `intel` directory for classified files
+4. **Mission 2**: Decode the binary message in `matrix.dat`  
+5. **Mission 3**: Find the secret password and crack the vault
+6. **Victory**: Collect all 3 codes and check `victory.txt`
+
+**Hidden Secrets:**
+- Check your `.bashrc` file for helpful aliases
+- Look for `.secret` files with hidden passwords
+- The diary mentions important clues...
+- Binary code in matrix.dat: `01000010 01000101...` (hint: convert to ASCII!)
+
 ## 🛠️ Technical Details
 
 ### Built With
@@ -104,7 +135,10 @@ Berto also supports all standard terminal commands:
 - **Frontend**: React-based terminal interface with real-time interaction
 - **Backend**: Next.js API routes handling OpenAI integration
 - **AI Service**: GPT-4 Turbo for natural language interpretation
-- **File System**: Simulated file system for educational purposes
+- **Hybrid File System**: 
+  - **Local Mode**: Direct filesystem access for development
+  - **Remote Mode**: File upload system with virtual filesystem for Vercel deployment
+- **Environment Detection**: Automatically detects deployment environment
 
 ### API Integration
 
@@ -181,6 +215,31 @@ berto-ai-terminal/
 4. Test thoroughly
 5. Submit a pull request
 
+## 🌐 Remote vs Local Mode
+
+### Remote Mode (Vercel Deployment)
+
+When deployed on Vercel, Berto automatically switches to **Remote Mode**:
+
+- 🌐 **File Upload Interface**: Upload your local files to work with them
+- 📁 **Virtual File System**: Files are stored in memory during your session
+- 🔧 **Limited Commands**: Supports `cat`, `ls`, `echo > file`, and AI commands
+- 🛡️ **Secure**: No access to server filesystem for security
+
+**Using Remote Mode:**
+1. Use the file upload interface at the top of the terminal
+2. Drag and drop files or click to browse
+3. Files are available immediately for terminal commands
+4. Use `ls` to see uploaded files, `cat filename` to read them
+
+### Local Mode (Development)
+
+When running locally (development), Berto uses **Local Mode**:
+
+- ⚡ **Real File System**: Direct access to your actual files
+- 🔧 **Full Commands**: All terminal commands work as expected
+- 🖥️ **Native Performance**: No upload needed, instant file access
+
 ## 🚀 Deployment
 
 ### Vercel (Recommended)
@@ -190,14 +249,16 @@ berto-ai-terminal/
 3. Add your `OPENAI_API_KEY` environment variable
 4. Deploy!
 
-**Note**: Vercel configuration is automatically set up with `vercel.json` which uses pnpm for builds.
+**Note**: Vercel configuration is automatically set up with `vercel.json` which uses pnpm for builds. The app will automatically detect the Vercel environment and enable Remote Mode with file upload functionality.
 
 ### Other Platforms
 
 Berto works on any platform that supports Next.js:
-- Netlify
-- Railway
-- Heroku
+- Netlify (will use Remote Mode)
+- Railway (will use Remote Mode)  
+- Heroku (will use Remote Mode)
+
+
 - Docker
 
 ## 🔧 Build Troubleshooting

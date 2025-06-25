@@ -8,26 +8,37 @@ import { Sparkles } from "lucide-react"
 import { shouldInterpretWithAI, interpretNaturalLanguage } from "./commands"
 import type { TerminalLine } from "./types/filesystem"
 import { getApiHeaders, getApiUrl } from "@/lib/utils"
+import FileUpload from "@/components/file-upload"
 
 // Initial lines will be determined based on environment
 const getInitialLines = (): TerminalLine[] => {
-  
   const baseLines = [
-    { type: "info" as const, content: "🤖 Hi, I'm Berto, your vibe terminal", timestamp: new Date() },
+    { type: "info" as const, content: "🤖 Hi, I'm Berto, your AI terminal!", timestamp: new Date() },
     { type: "output" as const, content: "", timestamp: new Date() },
-    { type: "output" as const, content: "This is a terminal for humans. Theres no need to know commands, just vibes.", timestamp: new Date() },
-    { type: "output" as const, content: "🧠 Ask me to do things like, create files, or show you folders, and I will do it.", timestamp: new Date() },
+    { type: "output" as const, content: "Terminal for humans. No commands needed, just vibes! 😎", timestamp: new Date() },
     { type: "output" as const, content: "", timestamp: new Date() },
-    { type: "output" as const, content: "💡 I'll show you the command so you can learn how to do it in your real terminal", timestamp: new Date() },
-    { type: "info" as const, content: "✨ Here are some examples: 'show me the files in this folder', 'make a project folder and call it 'bananas', 'help me find all the python files in this folder'", timestamp: new Date() },
+    { type: "info" as const, content: "🚀 Try these commands:", timestamp: new Date() },
+    { type: "output" as const, content: "• 'help' - see all commands", timestamp: new Date() },
+    { type: "output" as const, content: "• 'ls' - list files", timestamp: new Date() },
+    { type: "output" as const, content: "• 'hack' - start cyber game!", timestamp: new Date() },
+    { type: "output" as const, content: "• 'cat welcome.txt' - read welcome", timestamp: new Date() },
     { type: "output" as const, content: "", timestamp: new Date() },
-    { type: "info" as const, content: "🎯 Also, you can ask for help and I will list all the commands you can use", timestamp: new Date() }, 
+    { type: "info" as const, content: "💡 Or ask naturally: 'show files', 'help me', 'what can you do?'", timestamp: new Date() },
     { type: "output" as const, content: "", timestamp: new Date() },
   ];
 
-  baseLines.push(
-    { type: "info" as const, content: "⚡ This terminal executes REAL commands on your machine!", timestamp: new Date() }
-  );
+  // Check if we're likely on mobile (basic detection)
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  
+  if (isMobile) {
+    baseLines.push(
+      { type: "info" as const, content: "📱 Mobile tip: Tap anywhere to focus input!", timestamp: new Date() }
+    );
+  } else {
+    baseLines.push(
+      { type: "info" as const, content: "⚡ This terminal executes REAL commands!", timestamp: new Date() }
+    );
+  }
   
   baseLines.push({ type: "output" as const, content: "", timestamp: new Date() });
   return baseLines;
@@ -46,6 +57,7 @@ export default function Terminal() {
   const [user, setUser] = useState<string>("user")
   const [hostname, setHostname] = useState<string>("vibe-terminal")
   const [directoryContents, setDirectoryContents] = useState<string[]>([])
+  const [isRemoteMode, setIsRemoteMode] = useState<boolean>(false)
 
   const inputRef = useRef<HTMLInputElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -77,8 +89,14 @@ export default function Terminal() {
           body: JSON.stringify({ command: 'pwd' })
         });
         const pwdResult = await pwdResponse.json();
+        
+        // Check if we're in remote mode based on the response
+        setIsRemoteMode(pwdResult.isSimulated || false);
+        
         if (pwdResult.success) {
-          setCurrentWorkingDirectory(pwdResult.stdout.trim());
+          setCurrentWorkingDirectory(pwdResult.stdout.trim() || '/home/user');
+        } else {
+          setCurrentWorkingDirectory('/home/user');
         }
 
         // Get username
@@ -107,6 +125,9 @@ export default function Terminal() {
         await updateDirectoryContents();
       } catch (error) {
         console.error('Failed to initialize terminal:', error);
+        // Assume remote mode if initialization fails
+        setIsRemoteMode(true);
+        setCurrentWorkingDirectory('/home/user');
       }
     };
 
@@ -431,6 +452,38 @@ export default function Terminal() {
     }
   }
 
+  // Handle file upload completion
+  const handleFileUploadComplete = (files: { name: string; size: number; path: string }[]) => {
+    const newLines: TerminalLine[] = [
+      {
+        type: "info",
+        content: `📁 Successfully uploaded ${files.length} file(s):`,
+        timestamp: new Date(),
+      },
+    ];
+
+    files.forEach(file => {
+      newLines.push({
+        type: "output",
+        content: `   • ${file.name} (${Math.round(file.size / 1024)}KB)`,
+        timestamp: new Date(),
+      });
+    });
+
+    newLines.push({
+      type: "info",
+      content: "💡 You can now use 'ls' to see your files or 'cat filename' to read them!",
+      timestamp: new Date(),
+    });
+
+    newLines.push({ type: "output", content: "", timestamp: new Date() });
+
+    setLines((prev) => [...prev, ...newLines]);
+    
+    // Update directory contents to show uploaded files
+    setTimeout(updateDirectoryContents, 100);
+  };
+
   const handleKeyDown = async (e: React.KeyboardEvent) => {
     if (isProcessing) {
       e.preventDefault()
@@ -474,7 +527,7 @@ export default function Terminal() {
   }
 
   const renderLine = (line: TerminalLine, index: number) => {
-    let className = "whitespace-pre-wrap break-all font-mono text-sm leading-relaxed"
+    let className = "whitespace-pre-wrap break-words font-mono text-sm sm:text-sm leading-relaxed py-1 sm:py-0"
     switch (line.type) {
       case "command":
         className += " text-green-400 font-medium"
@@ -509,39 +562,57 @@ export default function Terminal() {
 
       <div className="relative h-full flex flex-col">
         {/* Clean Terminal Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-800">
-          <div className="flex items-center gap-3">
-            <Sparkles className="w-5 h-5 text-green-400" />
-            <span className="text-xl font-mono font-bold text-white tracking-wider">BERTO VIBE TERMINAL</span>
+        <div className="flex items-center justify-between px-4 sm:px-6 py-4 sm:py-4 border-b border-gray-800 bg-gray-900">
+          <div className="flex items-center gap-3 sm:gap-3 min-w-0 flex-1">
+            <Sparkles className="w-5 h-5 sm:w-5 sm:h-5 text-green-400 flex-shrink-0" />
+            <span className="text-lg sm:text-xl font-mono font-bold text-white tracking-wider">
+              BERTO TERMINAL
+            </span>
             {pendingSteps.length > 0 && (
-              <div className="text-xs text-yellow-400 font-mono animate-pulse">
+              <div className="text-xs text-yellow-400 font-mono animate-pulse hidden lg:block">
                 🤖 Auto-executing ({pendingSteps.length} steps remaining)
               </div>
             )}
           </div>
-          <div className="text-sm text-gray-400 font-mono">
-            ⚡ Real Shell Mode • {currentWorkingDirectory}
+          <div className="text-xs sm:text-sm text-gray-400 font-mono ml-2">
+            <div className="text-right">
+              <div className="hidden sm:block">{isRemoteMode ? '🌐 Remote Mode' : '⚡ Local Mode'}</div>
+              <div className="sm:hidden">{isRemoteMode ? '🌐' : '⚡'}</div>
+            </div>
           </div>
         </div>
 
+        {/* File Upload Section (only in remote mode) */}
+        {isRemoteMode && (
+          <div className="px-4 sm:px-8 py-3 sm:py-4 border-b border-gray-800">
+            <FileUpload
+              onUploadComplete={handleFileUploadComplete}
+              currentPath={currentWorkingDirectory}
+              isRemoteMode={isRemoteMode}
+            />
+          </div>
+        )}
+
         {/* Terminal Content */}
         <div
-          className="flex-1 px-8 py-6 cursor-text overflow-hidden relative z-10"
+          className="flex-1 px-3 sm:px-8 py-3 sm:py-6 cursor-text overflow-hidden relative z-10"
           onClick={() => inputRef.current?.focus()}
-          style={{ fontSize: `${fontSize}px` }}
+          style={{ fontSize: `${fontSize}px` }} // Keep normal font size
         >
           <ScrollArea className="h-full" ref={scrollRef}>
-            <div className="space-y-1 w-full max-w-none">
+            <div className="space-y-2 sm:space-y-1 w-full max-w-none">
               {lines.map((line, index) => renderLine(line, index))}
-              <div className="flex items-center mt-4">
-                <span className="text-green-400 mr-3 font-mono text-sm font-medium flex-shrink-0">{getPrompt()}</span>
+              <div className="flex flex-col sm:flex-row sm:items-start mt-6 sm:mt-4 gap-2 sm:gap-3">
+                <span className="text-green-400 font-mono text-sm sm:text-sm font-medium flex-shrink-0">
+                  {getPrompt()}
+                </span>
                 <Input
                   ref={inputRef}
                   value={currentInput}
                   onChange={(e) => setCurrentInput(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  className="flex-1 bg-transparent border-none p-0 text-white font-mono text-sm focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500"
-                  placeholder={isProcessing ? "Processing..." : "Type naturally or use commands..."}
+                  className="flex-1 bg-transparent border-none p-2 sm:p-0 text-white font-mono text-sm sm:text-sm focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500 min-w-0 border border-gray-600 sm:border-none rounded sm:rounded-none"
+                  placeholder={isProcessing ? "Processing..." : "Type command or ask naturally..."}
                   autoComplete="off"
                   disabled={isProcessing}
                 />
@@ -552,13 +623,21 @@ export default function Terminal() {
 
         {/* AI Thinking Indicator */}
         {aiThinking && (
-          <div className="px-8 py-3 border-t border-gray-800 bg-gray-900/50">
+          <div className="px-4 sm:px-8 py-3 border-t border-gray-800 bg-gray-900/50">
             <div className="text-sm text-yellow-400 font-mono animate-pulse">
               {aiThinking}
             </div>
           </div>
         )}
+
+        {/* Mobile-specific touch hint */}
+        <div className="sm:hidden px-4 py-2 bg-gray-800/50 border-t border-gray-700">
+          <div className="text-xs text-gray-400 font-mono text-center">
+            💡 Tip: Tap anywhere to focus input • Try: "hack" or "ls"
+          </div>
+        </div>
       </div>
     </div>
   )
 }
+
