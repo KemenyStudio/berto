@@ -36,7 +36,7 @@ export const createInitialFileSystem = (): FileSystemNode => ({
               size: 256,
               modified: new Date(),
               content:
-                "🤖 Welcome to Berto's Vibe Terminal!\n\nAI-powered terminal that speaks human!\nJust tell me what you want to do!\n\nQuick starts:\n• 'ls' - list files\n• 'hack' - start the game!\n• 'joke' - hear a joke\n• 'fortune' - get a fortune\n\n🕵️ Secret: try 'ls -la' to see hidden files!\n\nHave fun! Surprises await... ✨",
+                "🤖 Hi, I'm Berto, your AI terminal!\n\nTerminal for humans. No commands needed, just vibes! 😎\n\n🚀 Try these commands:\n• 'help' - see all commands\n• 'ls' - list files\n• 'hack' - start cyber game!\n• 'cat welcome.txt' - read welcome\n\n💡 Or ask naturally: 'show files', 'help me', 'what can you do?'\n\n⚡ This terminal executes REAL commands!\n\n🕵️ Secret: try 'ls -la' to see hidden files!\n\nHave fun! Surprises await... ✨",
             },
             documents: {
               name: "documents",

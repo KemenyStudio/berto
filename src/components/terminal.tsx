@@ -10,28 +10,28 @@ import type { TerminalLine } from "../types/filesystem"
 import { getApiHeaders, getApiUrl } from "@/lib/utils"
 
 
-// Initial lines will be determined based on environment
-const getInitialLines = (): TerminalLine[] => {
-  return [
-    { type: "info" as const, content: "🤖 Hi, I'm Berto, your AI terminal!", timestamp: new Date() },
-    { type: "output" as const, content: "", timestamp: new Date() },
-    { type: "output" as const, content: "Terminal for humans. No commands needed, just vibes! 😎", timestamp: new Date() },
-    { type: "output" as const, content: "", timestamp: new Date() },
-    { type: "info" as const, content: "🚀 Try these commands:", timestamp: new Date() },
-    { type: "output" as const, content: "• 'help' - see all commands", timestamp: new Date() },
-    { type: "output" as const, content: "• 'ls' - list files", timestamp: new Date() },
-    { type: "output" as const, content: "• 'hack' - start cyber game!", timestamp: new Date() },
-    { type: "output" as const, content: "• 'cat welcome.txt' - read welcome", timestamp: new Date() },
-    { type: "output" as const, content: "", timestamp: new Date() },
-    { type: "info" as const, content: "💡 Or ask naturally: 'show files', 'help me', 'what can you do?'", timestamp: new Date() },
-    { type: "output" as const, content: "", timestamp: new Date() },
-    { type: "info" as const, content: "⚡ This terminal executes REAL commands!", timestamp: new Date() },
-    { type: "output" as const, content: "", timestamp: new Date() },
-  ];
-};
+// Static initial lines to prevent hydration mismatch - defined outside component
+const STATIC_TIMESTAMP = new Date('2024-01-01T00:00:00.000Z');
+
+const INITIAL_LINES: TerminalLine[] = [
+  { type: "info" as const, content: "🤖 Hi, I'm Berto, your AI terminal!", timestamp: STATIC_TIMESTAMP },
+  { type: "output" as const, content: "", timestamp: STATIC_TIMESTAMP },
+  { type: "output" as const, content: "Terminal for humans. No commands needed, just vibes! 😎", timestamp: STATIC_TIMESTAMP },
+  { type: "output" as const, content: "", timestamp: STATIC_TIMESTAMP },
+  { type: "info" as const, content: "🚀 Try these commands:", timestamp: STATIC_TIMESTAMP },
+  { type: "output" as const, content: "• 'help' - see all commands", timestamp: STATIC_TIMESTAMP },
+  { type: "output" as const, content: "• 'ls' - list files", timestamp: STATIC_TIMESTAMP },
+  { type: "output" as const, content: "• 'hack' - start cyber game!", timestamp: STATIC_TIMESTAMP },
+  { type: "output" as const, content: "• 'cat welcome.txt' - read welcome", timestamp: STATIC_TIMESTAMP },
+  { type: "output" as const, content: "", timestamp: STATIC_TIMESTAMP },
+  { type: "info" as const, content: "💡 Or ask naturally: 'show files', 'help me', 'what can you do?'", timestamp: STATIC_TIMESTAMP },
+  { type: "output" as const, content: "", timestamp: STATIC_TIMESTAMP },
+  { type: "info" as const, content: "⚡ This terminal executes REAL commands!", timestamp: STATIC_TIMESTAMP },
+  { type: "output" as const, content: "", timestamp: STATIC_TIMESTAMP },
+];
 
 export default function Terminal() {
-  const [lines, setLines] = useState<TerminalLine[]>(getInitialLines())
+  const [lines, setLines] = useState<TerminalLine[]>(INITIAL_LINES)
   const [currentInput, setCurrentInput] = useState("")
   const [commandHistory, setCommandHistory] = useState<string[]>([])
   const [historyIndex, setHistoryIndex] = useState(-1)
@@ -41,7 +41,7 @@ export default function Terminal() {
   const [pendingSteps, setPendingSteps] = useState<string[]>([])
   const [currentWorkingDirectory, setCurrentWorkingDirectory] = useState<string>("")
   const [user, setUser] = useState<string>("user")
-  const [hostname, setHostname] = useState<string>("vibe-terminal")
+  const [hostname, setHostname] = useState<string>("berto-terminal")
   const [directoryContents, setDirectoryContents] = useState<string[]>([])
   const [isRemoteMode, setIsRemoteMode] = useState<boolean>(false)
 
@@ -64,25 +64,8 @@ export default function Terminal() {
     }
   }
 
-  // Add mobile tip after hydration to avoid hydration mismatch
-  useEffect(() => {
-    const isMobile = window.innerWidth < 768;
-    if (isMobile) {
-      setLines(prevLines => {
-        // Replace the last info line with mobile tip
-        const newLines = [...prevLines];
-        const lastInfoIndex = newLines.findLastIndex(line => line.content === "⚡ This terminal executes REAL commands!");
-        if (lastInfoIndex !== -1) {
-          newLines[lastInfoIndex] = {
-            type: "info",
-            content: "📱 Mobile tip: Tap anywhere to focus input!",
-            timestamp: new Date()
-          };
-        }
-        return newLines;
-      });
-    }
-  }, []);
+  // Note: Removed mobile detection to prevent hydration mismatch
+  // Mobile tip functionality can be added later with proper SSR handling
 
   // Get initial working directory and user info
   useEffect(() => {
@@ -330,7 +313,7 @@ export default function Terminal() {
         })
         newLines.push({
           type: "output",
-          content: `💡 Copy this command to use in your real terminal: ${actualCommand}`,
+          content: `💡 Learn the command: ${actualCommand}`,
           timestamp: new Date(),
         })
         newLines.push({ type: "output", content: "", timestamp: new Date() })

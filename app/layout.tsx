@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import '../src/styles/globals.css'
+import './globals.css'
 
 export const metadata: Metadata = {
   title: 'Berto - AI Terminal Assistant',

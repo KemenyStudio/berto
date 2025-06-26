@@ -16,11 +16,11 @@ export const useTerminalState = () => {
       PWD: "/home/user",
     },
     user: "user",
-    hostname: "vibe-terminal",
+    hostname: "berto-terminal",
     processes: [
       { pid: 1, name: "init", status: "running", cpu: 0.1, memory: 2.1 },
       { pid: 123, name: "bash", status: "running", cpu: 0.0, memory: 1.2 },
-      { pid: 456, name: "vibe-terminal", status: "running", cpu: 0.5, memory: 15.3 },
+      { pid: 456, name: "berto-terminal", status: "running", cpu: 0.5, memory: 15.3 },
     ],
   })
 

@@ -1,6 +1,6 @@
 "use client"
 
-import Terminal from "../src/components/terminal"
+import Terminal from "@/components/terminal"
 
 export default function Page() {
   return (
