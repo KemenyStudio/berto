@@ -29,8 +29,10 @@ export async function POST(req: NextRequest) {
     if (trimmedCommand.startsWith('cat ')) {
       const filePath = command.trim().substring(4);
       
-      // Special handling for hack challenge files when in /var/games
-      if (shellExecutor.getCurrentWorkingDirectory() === '/var/games' && filePath === 'README_HACK') {
+      // Special handling for hack challenge files
+      const currentDir = shellExecutor.getCurrentWorkingDirectory();
+      
+      if (currentDir === '/var/games' && filePath === 'README_HACK') {
         try {
           const aiResponse = await fetch(getApiUrl("/api/ai"), {
             method: "POST",
@@ -87,6 +89,117 @@ Once you have all 3 codes, check 'victory.txt'!
         });
       }
       
+      // Special handlers for intel directory files
+      if (currentDir === '/var/games/intel') {
+        if (filePath === 'mission_brief.txt') {
+          return NextResponse.json({
+            stdout: `🕵️ CLASSIFIED MISSION BRIEFING\n\n` +
+                   `OPERATION: DIGITAL INFILTRATION\n` +
+                   `OBJECTIVE: Locate and extract 3 access codes\n\n` +
+                   `INTEL REPORT:\n` +
+                   `- Primary target: Mainframe database\n` +
+                   `- Security level: MAXIMUM\n` +
+                   `- Time constraint: CRITICAL\n\n` +
+                   `AGENT INSTRUCTIONS:\n` +
+                   `1. Decode matrix pattern (../matrix.dat)\n` +
+                   `2. Crack vault security (../vault/)\n` +
+                   `3. Compile all access codes\n\n` +
+                   `STATUS: ACTIVE\n` +
+                   `CLEARANCE LEVEL: NEED-TO-KNOW\n\n` +
+                   `💡 Check CODE_1.dat for your first access code!`,
+            stderr: '',
+            exitCode: 0,
+            success: true,
+            currentWorkingDirectory: currentDir,
+            isSimulated: true
+          });
+        } else if (filePath === 'CODE_1.dat') {
+          return NextResponse.json({
+            stdout: `🔐 ACCESS CODE 1 LOCATED\n\n` +
+                   `DECRYPTION SUCCESSFUL...\n` +
+                   `PARSING DIGITAL SIGNATURE...\n\n` +
+                   `┌─────────────────────────────┐\n` +
+                   `│    ACCESS CODE 1: ALPHA     │\n` +
+                   `│    VALIDATION: ✓ CONFIRMED  │\n` +
+                   `└─────────────────────────────┘\n\n` +
+                   `🎯 PROGRESS: 1/3 codes found\n` +
+                   `📋 NEXT STEPS:\n` +
+                   `   • Decode matrix.dat for CODE_2\n` +
+                   `   • Crack vault for CODE_3\n\n` +
+                   `💡 Use 'cat ../matrix.dat' to continue!`,
+            stderr: '',
+            exitCode: 0,
+            success: true,
+            currentWorkingDirectory: currentDir,
+            isSimulated: true
+          });
+        } else if (filePath === 'targets.list') {
+          return NextResponse.json({
+            stdout: `🎯 TARGET ACQUISITION LIST\n\n` +
+                   `PRIMARY TARGETS:\n` +
+                   `• Database Server: 192.168.1.100\n` +
+                   `• Backup System: 192.168.1.101\n` +
+                   `• Security Node: 192.168.1.102\n\n` +
+                   `SECONDARY TARGETS:\n` +
+                   `• Admin Workstation: 192.168.1.50\n` +
+                   `• Network Gateway: 192.168.1.1\n\n` +
+                   `ENCRYPTION PROTOCOLS:\n` +
+                   `• RSA-2048 (Primary)\n` +
+                   `• AES-256 (Backup)\n\n` +
+                   `⚠️  SECURITY NOTICE: All targets under surveillance`,
+            stderr: '',
+            exitCode: 0,
+            success: true,
+            currentWorkingDirectory: currentDir,
+            isSimulated: true
+          });
+        } else if (filePath === '.classified' || filePath === './.classified') {
+          return NextResponse.json({
+            stdout: `🔒 CLASSIFIED DOCUMENT - EYES ONLY\n\n` +
+                   `OPERATION CODENAME: DIGITAL GHOST\n` +
+                   `AUTHORIZATION LEVEL: OMEGA\n\n` +
+                   `VAULT PASSWORD HINT:\n` +
+                   `"The answer lies in the question itself"\n` +
+                   `"Look for what was written in the beginning"\n\n` +
+                   `EMERGENCY PROTOCOLS:\n` +
+                   `• Code word: FIREWALL\n` +
+                   `• Extraction point: /home/user\n\n` +
+                   `⚠️  DESTROY AFTER READING ⚠️`,
+            stderr: '',
+            exitCode: 0,
+            success: true,
+            currentWorkingDirectory: currentDir,
+            isSimulated: true
+          });
+        }
+      }
+      
+      // Special handler for matrix.dat file
+      if ((currentDir === '/var/games' || currentDir === '/var/games/intel') && (filePath === 'matrix.dat' || filePath === '../matrix.dat')) {
+        return NextResponse.json({
+          stdout: `🔢 MATRIX DECRYPTION PROTOCOL\n\n` +
+                 `ENCRYPTED DATA STREAM:\n` +
+                 `01000010 01100101 01110010 01110100 01101111\n` +
+                 `11000010 10100000 01000010 01100101 01110100\n` +
+                 `01000001 00100000 01000010 01100101 01110100\n` +
+                 `01000001 00100000 01000010 01100101 01110100\n\n` +
+                 `DECODING MATRIX...\n` +
+                 `BINARY TO ASCII CONVERSION...\n\n` +
+                 `┌─────────────────────────────┐\n` +
+                 `│    ACCESS CODE 2: BETA      │\n` +
+                 `│    VALIDATION: ✓ CONFIRMED  │\n` +
+                 `└─────────────────────────────┘\n\n` +
+                 `🎯 PROGRESS: 2/3 codes found\n` +
+                 `📋 FINAL STEP: Access vault for CODE_3\n\n` +
+                 `💡 Try 'cd vault' to enter the final challenge!`,
+          stderr: '',
+          exitCode: 0,
+          success: true,
+          currentWorkingDirectory: shellExecutor.getCurrentWorkingDirectory(),
+          isSimulated: true
+        });
+      }
+      
       const result = await hybridFileSystem.readFile(filePath);
       return NextResponse.json({
         stdout: result.content || '',
@@ -103,8 +216,10 @@ Once you have all 3 codes, check 'victory.txt'!
       const pathMatch = command.match(/ls\s+(.+)/);
       const dirPath = pathMatch ? pathMatch[1].replace(/^-\w+\s+/, '') : '.';
       
-      // Special handling for /var/games directory listing
-      if (shellExecutor.getCurrentWorkingDirectory() === '/var/games' && (dirPath === '.' || dirPath === '/var/games')) {
+      // Special handling for hack challenge directories
+      const currentDir = shellExecutor.getCurrentWorkingDirectory();
+      
+      if (currentDir === '/var/games' && (dirPath === '.' || dirPath === '/var/games')) {
         const hackFiles = [
           'drwxr-xr-x 1 games games 4096 Dec 25 12:00 .',
           'drwxr-xr-x 1 root  root  4096 Dec 25 12:00 ..',
@@ -124,6 +239,34 @@ Once you have all 3 codes, check 'victory.txt'!
           currentWorkingDirectory: shellExecutor.getCurrentWorkingDirectory(),
           isSimulated: true
         });
+      } else if (currentDir === '/var/games/intel' && (dirPath === '.' || dirPath === 'intel')) {
+        const intelFiles = [
+          'drwxr-xr-x 1 games games 4096 Dec 25 12:00 .',
+          'drwxr-xr-x 1 games games 4096 Dec 25 12:00 ..',
+          '-rw-r--r-- 1 agent agent  256 Dec 25 12:00 mission_brief.txt',
+          '-rw-r--r-- 1 agent agent  180 Dec 25 12:00 targets.list',
+          '-rw------- 1 agent agent   42 Dec 25 12:00 .classified',
+          '-rwxr-xr-x 1 agent agent  512 Dec 25 12:00 decode.sh',
+          '-rw-r--r-- 1 agent agent  128 Dec 25 12:00 CODE_1.dat'
+        ];
+        
+        return NextResponse.json({
+          stdout: `🕵️ INTEL DIRECTORY - CLASSIFIED FILES\n\ntotal 12\n${intelFiles.join('\n')}\n\n💡 Try: cat mission_brief.txt, cat CODE_1.dat`,
+          stderr: '',
+          exitCode: 0,
+          success: true,
+          currentWorkingDirectory: currentDir,
+          isSimulated: true
+        });
+      } else if (currentDir === '/var/games/vault' && (dirPath === '.' || dirPath === 'vault')) {
+        return NextResponse.json({
+          stdout: '🔐 VAULT ACCESS DENIED\n\nAccess to vault contents requires authentication.\nPassword hint: It was mentioned in the README...\n\n💡 Try: cat ../README_HACK for clues',
+          stderr: '',
+          exitCode: 0,
+          success: true,
+          currentWorkingDirectory: currentDir,
+          isSimulated: true
+        });
       }
       
       const result = await hybridFileSystem.listDirectory(dirPath);
@@ -135,6 +278,123 @@ Once you have all 3 codes, check 'victory.txt'!
         currentWorkingDirectory: shellExecutor.getCurrentWorkingDirectory(),
         isSimulated: result.isSimulated
       });
+    }
+
+    // Handle cd command for hack challenge and simulated environments
+    if (trimmedCommand.startsWith('cd ')) {
+      const targetPath = command.trim().substring(3).trim() || '~';
+      
+      // Special handling for hack challenge directories
+      const currentDir = shellExecutor.getCurrentWorkingDirectory();
+      
+      if (currentDir === '/var/games') {
+        // Handle cd commands within the hack challenge
+        if (targetPath === 'intel' || targetPath === './intel') {
+          // Simulate entering intel directory
+          shellExecutor.setCurrentWorkingDirectory('/var/games/intel');
+          return NextResponse.json({
+            stdout: '',
+            stderr: '',
+            exitCode: 0,
+            success: true,
+            currentWorkingDirectory: '/var/games/intel',
+            isSimulated: true
+          });
+        } else if (targetPath === 'vault' || targetPath === './vault') {
+          // Simulate entering vault directory (but require password later)
+          shellExecutor.setCurrentWorkingDirectory('/var/games/vault');
+          return NextResponse.json({
+            stdout: '',
+            stderr: '',
+            exitCode: 0,
+            success: true,
+            currentWorkingDirectory: '/var/games/vault',
+            isSimulated: true
+          });
+        } else if (targetPath === '..' || targetPath === '../') {
+          // Go back to parent directory
+          shellExecutor.setCurrentWorkingDirectory('/var');
+          return NextResponse.json({
+            stdout: '',
+            stderr: '',
+            exitCode: 0,
+            success: true,
+            currentWorkingDirectory: '/var',
+            isSimulated: true
+          });
+        } else if (targetPath === '~' || targetPath === '/home/user') {
+          // Go to home directory
+          shellExecutor.setCurrentWorkingDirectory('/home/user');
+          return NextResponse.json({
+            stdout: '',
+            stderr: '',
+            exitCode: 0,
+            success: true,
+            currentWorkingDirectory: '/home/user',
+            isSimulated: true
+          });
+        }
+      } else if (currentDir === '/var/games/intel' && (targetPath === '..' || targetPath === '../')) {
+        // Go back to /var/games from intel
+        shellExecutor.setCurrentWorkingDirectory('/var/games');
+        return NextResponse.json({
+          stdout: '',
+          stderr: '',
+          exitCode: 0,
+          success: true,
+          currentWorkingDirectory: '/var/games',
+          isSimulated: true
+        });
+      } else if (currentDir === '/var/games/vault' && (targetPath === '..' || targetPath === '../')) {
+        // Go back to /var/games from vault
+        shellExecutor.setCurrentWorkingDirectory('/var/games');
+        return NextResponse.json({
+          stdout: '',
+          stderr: '',
+          exitCode: 0,
+          success: true,
+          currentWorkingDirectory: '/var/games',
+          isSimulated: true
+        });
+      } else if (targetPath === '/var/games') {
+        // Direct navigation to hack challenge
+        shellExecutor.setCurrentWorkingDirectory('/var/games');
+        return NextResponse.json({
+          stdout: '',
+          stderr: '',
+          exitCode: 0,
+          success: true,
+          currentWorkingDirectory: '/var/games',
+          isSimulated: true
+        });
+      }
+      
+      // For other cd commands in remote mode, try to handle them gracefully
+      if (!environmentDetector.canAccessLocalFiles()) {
+        // Basic simulated directory navigation
+        let newPath = targetPath;
+        if (targetPath === '~' || targetPath === '$HOME') {
+          newPath = '/home/user';
+        } else if (targetPath === '..') {
+          const parts = currentDir.split('/').filter(p => p);
+          parts.pop();
+          newPath = '/' + parts.join('/');
+          if (newPath === '/') newPath = '/home/user';
+        } else if (!targetPath.startsWith('/')) {
+          // Relative path
+          newPath = currentDir + '/' + targetPath;
+        }
+        
+        shellExecutor.setCurrentWorkingDirectory(newPath);
+        return NextResponse.json({
+          stdout: '',
+          stderr: '',
+          exitCode: 0,
+          success: true,
+          currentWorkingDirectory: newPath,
+          isSimulated: true
+        });
+      }
     }
 
     // Handle echo to file creation

@@ -79,8 +79,26 @@ grep "text" *.txt         # Search in files
 Try these built-in commands:
 
 - **`help`** - See all available commands and tips
-- **`hack`** - Start a fun cyber game
+- **`hack`** - Start an immersive AI-powered cyber hacker challenge
 - **`clear`** - Clear the terminal screen
+
+### 🎮 Hack Challenge
+Experience Berto's interactive cyber security challenge:
+
+```bash
+hack                      # Start the challenge
+cd intel                  # Navigate to intel directory  
+cat CODE_1.dat           # Find your first access code
+cat ../matrix.dat        # Decode the matrix for CODE_2
+cd ../vault              # Enter the final vault challenge
+```
+
+**Features:**
+- 🕵️ **Immersive Story**: Realistic hacker scenario with classified files
+- 🔐 **Progressive Puzzles**: Find 3 access codes through different challenges
+- 🧭 **Full Navigation**: Complete `cd` support for directory exploration
+- 🤖 **AI-Generated Content**: Dynamic hints and responses
+- 🎯 **Educational**: Learn real terminal commands while playing
 
 ---
 
@@ -184,6 +202,21 @@ berto/
 - [ ] **Command History**: Persistent command history
 - [ ] **Tab Completion**: Smart command completion
 - [ ] **Session Management**: Multiple terminal sessions
+
+---
+
+## 📈 Recent Updates
+
+### v1.2.0 - Enhanced Hack Challenge (December 2024)
+- ✅ **Full Directory Navigation**: Fixed `cd` command support in remote/simulated environments
+- 🕵️ **Intel Directory**: Added interactive intel files with mission briefings and classified documents
+- 🔐 **Progressive Puzzle System**: Complete 3-stage access code discovery
+- 🎯 **Improved UX**: Better error handling and helpful guidance for players
+- 🤖 **AI Integration**: Dynamic content generation for hints and responses
+
+### Previous Releases
+- **v1.1.0**: Added natural language processing and AI command interpretation
+- **v1.0.0**: Initial release with basic terminal functionality
 
 ---
 
