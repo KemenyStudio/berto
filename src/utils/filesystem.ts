@@ -133,7 +133,7 @@ export const createInitialFileSystem = (): FileSystemNode => ({
               size: 445,
               modified: new Date(),
               content:
-                "🕵️ HACKER CHALLENGE INSTRUCTIONS\n\n1. INTEL GATHERING:\n   - Navigate to 'intel' directory\n   - Read all intelligence files\n   - Find CODE_1\n\n2. MATRIX DECODING:\n   - Check 'matrix.dat' file\n   - Decode the pattern to find CODE_2\n\n3. VAULT CRACKING:\n   - Enter the vault with the secret password\n   - Complete the puzzle for CODE_3\n\nOnce you have all 3 codes, check 'victory.txt'!\n\n💡 HINTS:\n- Use 'ls -la' to see hidden files\n- Some files need special commands\n- The password was mentioned somewhere...",
+                "🕵️ HACKER CHALLENGE INSTRUCTIONS\n\n1. INTEL GATHERING:\n   - Navigate to 'intel' directory\n   - Read all intelligence files\n   - Find CODE_1\n\n2. MATRIX DECODING:\n   - Check 'matrix.dat' file\n   - Decode the pattern to find CODE_2\n\n3. VAULT CRACKING:\n   - Enter the vault with the secret password\n   - Complete the puzzle for CODE_3\n\n▶ BONUS LEVEL:\n   - Explore the 'level2' directory for a side quest\n   - Record your name in 'scoreboard.txt' to save your score\n\nOnce you have all 3 codes, check 'victory.txt'!\n\n💡 HINTS:\n- Use 'ls -la' to see hidden files\n- Some files need special commands\n- The password was mentioned somewhere...",
             },
             intel: {
               name: "intel",
@@ -189,6 +189,37 @@ export const createInitialFileSystem = (): FileSystemNode => ({
               content:
                 "🔢 MATRIX DECODING CHALLENGE\n\n01000010 01000101 01010100 01000001\n01011000 01011001 01011010 01000101 \n01000101 01001001 01000111 01001000\n01010100 01011111 01000110 01001111\n01010101 01010010 01000101 01011000\n\n💡 HINT: This is binary code!\n💡 Each group of 8 bits = 1 letter\n💡 Convert to ASCII to reveal CODE_2\n\n🔍 Answer format: CODE_2: [YOUR_DECODED_MESSAGE]",
             },
+            level2: {
+              name: "level2",
+              type: "directory",
+              permissions: "drwxr-xr-x",
+              owner: "games",
+              group: "games",
+              size: 4096,
+              modified: new Date(),
+              children: {
+                "network.log": {
+                  name: "network.log",
+                  type: "file",
+                  permissions: "-rw-r--r--",
+                  owner: "games",
+                  group: "games",
+                  size: 210,
+                  modified: new Date(),
+                  content: "📡 INTERCEPTED NETWORK TRAFFIC\n\n[PACKET] 45 00 00 54...\n[PACKET] 45 00 00 28...\n\nHidden within the noise lies a secret word. Can you spot it?",
+                },
+                "puzzle.txt": {
+                  name: "puzzle.txt",
+                  type: "file",
+                  permissions: "-rw-r--r--",
+                  owner: "games",
+                  group: "games",
+                  size: 178,
+                  modified: new Date(),
+                  content: "🧩 SIDE QUEST RIDDLE\n\nI'm the key to many doors, yet I have no lock.\nBreak my code to reveal the bonus phrase.\nHint: Caesar liked to shift things by 13.",
+                },
+              },
+            },
             vault: {
               name: "vault",
               type: "directory",
@@ -221,6 +252,16 @@ export const createInitialFileSystem = (): FileSystemNode => ({
                 },
               },
             },
+            "scoreboard.txt": {
+              name: "scoreboard.txt",
+              type: "file",
+              permissions: "-rw-r--r--",
+              owner: "games",
+              group: "games",
+              size: 138,
+              modified: new Date(),
+              content: "🏆 HACKER SCOREBOARD\n\nAdd your alias and completion time using:\n  echo \"NAME - TIME\" > scoreboard.txt\n\nTop score will be displayed here!",
+            },
             "victory.txt": {
               name: "victory.txt",
               type: "file",
@@ -230,7 +271,7 @@ export const createInitialFileSystem = (): FileSystemNode => ({
               size: 445,
               modified: new Date(),
               content:
-                "🎉 CONGRATULATIONS HACKER! 🎉\n\nYou've successfully completed the Cyber Hack Challenge!\n\n✅ CODE_1: ALPHA_SEVEN_NINE (from intel)\n✅ CODE_2: BETAXYZE EIGHTFOUREX (from matrix)\n✅ CODE_3: FIRE_MASTER (from vault)\n\n🏆 ACHIEVEMENT UNLOCKED: Master Hacker\n\nYou've proven yourself worthy!\nWelcome to the elite hackers club! 😎\n\n🎮 Want more challenges? Check out /opt/retro for classic games!\n\nThank you for playing!\n- The Berto Game Master",
+                "🎉 CONGRATULATIONS HACKER! 🎉\n\nYou've successfully completed the Cyber Hack Challenge!\n\n✅ CODE_1: ALPHA_SEVEN_NINE (from intel)\n✅ CODE_2: BETAXYZE EIGHTFOUREX (from matrix)\n✅ CODE_3: FIRE_MASTER (from vault)\n\n🏆 ACHIEVEMENT UNLOCKED: Master Hacker\n\nAdd your alias to 'scoreboard.txt' and claim the top spot!\nWelcome to the elite hackers club! 😎\n\n🎮 Want more challenges? Check out /opt/retro for classic games!\n\nThank you for playing!\n- The Berto Game Master",
             },
           },
         },
