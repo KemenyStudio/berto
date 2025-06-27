@@ -87,10 +87,12 @@ Experience Berto's interactive cyber security challenge:
 
 ```bash
 hack                      # Start the challenge
-cd intel                  # Navigate to intel directory  
+cd intel                  # Navigate to intel directory
 cat CODE_1.dat           # Find your first access code
 cat ../matrix.dat        # Decode the matrix for CODE_2
 cd ../vault              # Enter the final vault challenge
+cd ../level2             # Optional side quest
+cat puzzle.txt           # Solve the riddle for extra glory
 ```
 
 **Features:**
@@ -99,6 +101,9 @@ cd ../vault              # Enter the final vault challenge
 - 🧭 **Full Navigation**: Complete `cd` support for directory exploration
 - 🤖 **AI-Generated Content**: Dynamic hints and responses
 - 🎯 **Educational**: Learn real terminal commands while playing
+- 🎮 **Side Quests**: Explore `level2` for optional puzzles
+- 🏆 **Scoreboard**: Add your alias to `scoreboard.txt`
+- 🔁 **Replayable**: AI randomizes hints for new runs
 
 ---
 

@@ -75,6 +75,10 @@ export async function POST(req: NextRequest) {
    - Enter the vault with the secret password
    - Complete the puzzle for CODE_3
 
+▶ BONUS LEVEL:
+   - Explore 'level2' for an optional side quest
+   - Add your alias to 'scoreboard.txt'
+
 Once you have all 3 codes, check 'victory.txt'!
 
 💡 HINTS:
@@ -227,12 +231,14 @@ Once you have all 3 codes, check 'victory.txt'!
           '-rwxr-xr-x 1 games games  512 Dec 25 12:00 start_hack.sh',
           'drwxr-xr-x 1 games games 4096 Dec 25 12:00 intel',
           '-rw-r--r-- 1 games games  334 Dec 25 12:00 matrix.dat',
+          'drwxr-xr-x 1 games games 4096 Dec 25 12:00 level2',
           'drwx------ 1 games games 4096 Dec 25 12:00 vault',
+          '-rw-r--r-- 1 games games  138 Dec 25 12:00 scoreboard.txt',
           '-rw-r--r-- 1 games games  445 Dec 25 12:00 victory.txt'
         ];
         
         return NextResponse.json({
-          stdout: `total 8\n${hackFiles.join('\n')}`,
+          stdout: `total 10\n${hackFiles.join('\n')}`,
           stderr: '',
           exitCode: 0,
           success: true,
@@ -252,6 +258,22 @@ Once you have all 3 codes, check 'victory.txt'!
         
         return NextResponse.json({
           stdout: `🕵️ INTEL DIRECTORY - CLASSIFIED FILES\n\ntotal 12\n${intelFiles.join('\n')}\n\n💡 Try: cat mission_brief.txt, cat CODE_1.dat`,
+          stderr: '',
+          exitCode: 0,
+          success: true,
+          currentWorkingDirectory: currentDir,
+          isSimulated: true
+        });
+      } else if (currentDir === '/var/games/level2' && (dirPath === '.' || dirPath === 'level2')) {
+        const level2Files = [
+          'drwxr-xr-x 1 games games 4096 Dec 25 12:00 .',
+          'drwxr-xr-x 1 games games 4096 Dec 25 12:00 ..',
+          '-rw-r--r-- 1 games games  210 Dec 25 12:00 network.log',
+          '-rw-r--r-- 1 games games  178 Dec 25 12:00 puzzle.txt'
+        ];
+
+        return NextResponse.json({
+          stdout: `📡 SIDE QUEST FILES\n\ntotal 8\n${level2Files.join('\n')}\n\n💡 Try: cat puzzle.txt`,
           stderr: '',
           exitCode: 0,
           success: true,
@@ -300,6 +322,17 @@ Once you have all 3 codes, check 'victory.txt'!
             currentWorkingDirectory: '/var/games/intel',
             isSimulated: true
           });
+        } else if (targetPath === 'level2' || targetPath === './level2') {
+          // Side quest directory
+          shellExecutor.setCurrentWorkingDirectory('/var/games/level2');
+          return NextResponse.json({
+            stdout: '',
+            stderr: '',
+            exitCode: 0,
+            success: true,
+            currentWorkingDirectory: '/var/games/level2',
+            isSimulated: true
+          });
         } else if (targetPath === 'vault' || targetPath === './vault') {
           // Simulate entering vault directory (but require password later)
           shellExecutor.setCurrentWorkingDirectory('/var/games/vault');
@@ -336,6 +369,17 @@ Once you have all 3 codes, check 'victory.txt'!
         }
       } else if (currentDir === '/var/games/intel' && (targetPath === '..' || targetPath === '../')) {
         // Go back to /var/games from intel
+        shellExecutor.setCurrentWorkingDirectory('/var/games');
+        return NextResponse.json({
+          stdout: '',
+          stderr: '',
+          exitCode: 0,
+          success: true,
+          currentWorkingDirectory: '/var/games',
+          isSimulated: true
+        });
+      } else if (currentDir === '/var/games/level2' && (targetPath === '..' || targetPath === '../')) {
+        // Go back to /var/games from level2
         shellExecutor.setCurrentWorkingDirectory('/var/games');
         return NextResponse.json({
           stdout: '',
